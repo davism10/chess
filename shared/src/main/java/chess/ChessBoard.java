@@ -12,6 +12,7 @@ import java.util.Objects;
 public class ChessBoard {
     private  ChessPiece[][] square = new ChessPiece[8][8];
     public ChessBoard() {
+        resetBoard();
     }
 
     /**
@@ -40,7 +41,7 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        square = new ChessPiece[8][8];
+        throw nonimplementationError();
     }
 
     @Override
