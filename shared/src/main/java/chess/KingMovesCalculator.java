@@ -8,7 +8,6 @@ public class KingMovesCalculator implements PieceMovesCalculator{
 
 
     private boolean can_add(int row, int column){
-        System.out.println("row " + row + "\n column " + column);
         return row >= 0 && row < 8 && column >= 0 && column < 8;
     }
 
