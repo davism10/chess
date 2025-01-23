@@ -8,7 +8,7 @@ public class KingMovesCalculator implements PieceMovesCalculator{
 
 
     private boolean can_add(int row, int column){
-        return row >= 0 && row < 8 && column >= 0 && column < 8;
+        return row >= 1 && row <= 8 && column >= 1 && column <= 8;
     }
 
     private boolean blocked(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition){
