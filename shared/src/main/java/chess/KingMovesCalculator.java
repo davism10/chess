@@ -7,7 +7,7 @@ public class KingMovesCalculator implements PieceMovesCalculator{
     KingMovesCalculator() {}
 
 
-    private boolean can_add(int row, int column){
+    private boolean canAdd(int row, int column){
         return row >= 1 && row <= 8 && column >= 1 && column <= 8;
     }
 
@@ -22,77 +22,77 @@ public class KingMovesCalculator implements PieceMovesCalculator{
 
     public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
-        ChessPosition new_position;
+        ChessPosition newPosition;
 
 //        check left
-        if (can_add(myPosition.getRow(), myPosition.getColumn()-1)){
-            new_position = new ChessPosition(myPosition.getRow(), myPosition.getColumn()-1);
-            if (blocked(board, myPosition, new_position)) {
-                ChessMove final_move = new ChessMove(myPosition, new_position, null);
-                moves.add(final_move);
+        if (canAdd(myPosition.getRow(), myPosition.getColumn()-1)){
+            newPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn()-1);
+            if (blocked(board, myPosition, newPosition)) {
+                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
+                moves.add(finalMove);
             }
         }
 
 //        upper left diag
-        if (can_add(myPosition.getRow()+1, myPosition.getColumn()-1)){
-            new_position = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1);
-            if (blocked(board, myPosition, new_position)) {
-                ChessMove final_move = new ChessMove(myPosition, new_position, null);
-                moves.add(final_move);
+        if (canAdd(myPosition.getRow()+1, myPosition.getColumn()-1)){
+            newPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1);
+            if (blocked(board, myPosition, newPosition)) {
+                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
+                moves.add(finalMove);
             }
         }
 
 //        up
-        if (can_add(myPosition.getRow()+1, myPosition.getColumn())){
-            new_position = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
-            if (blocked(board, myPosition, new_position)) {
-                ChessMove final_move = new ChessMove(myPosition, new_position, null);
-                moves.add(final_move);
+        if (canAdd(myPosition.getRow()+1, myPosition.getColumn())){
+            newPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
+            if (blocked(board, myPosition, newPosition)) {
+                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
+                moves.add(finalMove);
             }
         }
 
 //        upper right
-        if (can_add(myPosition.getRow()+1, myPosition.getColumn()+1)){
-            new_position = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
-            if (blocked(board, myPosition, new_position)) {
-                ChessMove final_move = new ChessMove(myPosition, new_position, null);
-                moves.add(final_move);
+        if (canAdd(myPosition.getRow()+1, myPosition.getColumn()+1)){
+            newPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
+            if (blocked(board, myPosition, newPosition)) {
+                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
+                moves.add(finalMove);
             }
         }
 
 //        right
-        if (can_add(myPosition.getRow(), myPosition.getColumn()+1)){
-            new_position = new ChessPosition(myPosition.getRow(), myPosition.getColumn()+1);
-            if (blocked(board, myPosition, new_position)) {
-                ChessMove final_move = new ChessMove(myPosition, new_position, null);
-                moves.add(final_move);
+        if (canAdd(myPosition.getRow(), myPosition.getColumn()+1)){
+            newPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn()+1);
+            if (blocked(board, myPosition, newPosition)) {
+                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
+                moves.add(finalMove);
             }
         }
 
 //        lower right diag
-        if (can_add(myPosition.getRow()-1, myPosition.getColumn()+1)){
-            new_position = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1);
-            if (blocked(board, myPosition, new_position)) {
-                ChessMove final_move = new ChessMove(myPosition, new_position, null);
-                moves.add(final_move);
+        if (canAdd(myPosition.getRow()-1, myPosition.getColumn()+1)){
+            newPosition = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1);
+            if (blocked(board, myPosition, newPosition)) {
+                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
+                moves.add(finalMove);
             }
         }
 
 //        down
-        if (can_add(myPosition.getRow()-1, myPosition.getColumn())){
-            new_position = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn());
-            if (blocked(board, myPosition, new_position)) {
-                ChessMove final_move = new ChessMove(myPosition, new_position, null);
-                moves.add(final_move);
+        if (canAdd(myPosition.getRow()-1, myPosition.getColumn())){
+            newPosition = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn());
+            if (blocked(board, myPosition, newPosition)) {
+                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
+                moves.add(finalMove);
             }
         }
 
 //        lower left diag
-        if (can_add(myPosition.getRow()-1, myPosition.getColumn()-1)){
-            new_position = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1);
-            if (blocked(board, myPosition, new_position)) {
-                ChessMove final_move = new ChessMove(myPosition, new_position, null);
-                moves.add(final_move);
+        if (canAdd(myPosition.getRow()-1, myPosition.getColumn()-1)){
+            newPosition = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1);
+            if (blocked(board, myPosition, newPosition)) {
+                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
+                moves.add(finalMove);
             }
         }
 

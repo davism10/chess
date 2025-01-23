@@ -100,13 +100,13 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        String return_string = "Chess Board: \n";
+        String returnString = "Chess Board: \n";
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                return_string += square[i][j] + ", ";
+                returnString += square[i][j] + ", ";
             }
-            return_string += "\n \n";
+            returnString += "\n \n";
         }
-        return return_string;
+        return returnString;
     }
 }

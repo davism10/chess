@@ -1,7 +1,6 @@
 package chess;
 
 import java.util.Collection;
-import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -86,8 +85,5 @@ public class ChessPiece {
             case KNIGHT -> new KnightMovesCalculator();
         };
         return moves.calculateMoves(board, myPosition);
-
-//        PieceMovesCalculator bishop = new BishopMovesCalculator();
-//        return bishop.calculateMoves(board, myPosition);
     }
 }
