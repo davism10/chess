@@ -4,75 +4,31 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class RookMovesCalculator implements PieceMovesCalculator{
-    RookMovesCalculator() {}
-
-    private boolean inBounds(ChessPosition myPosition){
+    public boolean inBounds(ChessPosition myPosition){
         return myPosition.getRow() >= 1 && myPosition.getRow() <= 8 && myPosition.getColumn() >= 1 && myPosition.getColumn() <= 8;
     }
 
-
-    public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition){
-        Collection<ChessMove> moves = new ArrayList<>();
+    public void searchMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int rowAdd, int colAdd){
         ChessPosition newPosition;
 
-//        First search the right
-        newPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn() + 1);
-        if (inBounds(newPosition)) {
-            while (inBounds(newPosition) && board.getPiece(newPosition) == null) {
-                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
-                moves.add(finalMove);
-                newPosition = new ChessPosition(newPosition.getRow(), newPosition.getColumn() + 1);
-
-            }
-            capturePiece(board, myPosition, moves, newPosition);
+        newPosition = new ChessPosition(myPosition.getRow() + rowAdd, myPosition.getColumn() + colAdd);
+        while (inBounds(newPosition) && board.getPiece(newPosition) == null){
+            moves.add(new ChessMove(myPosition, newPosition, null));
+            newPosition = new ChessPosition(newPosition.getRow() + rowAdd, newPosition.getColumn() + colAdd);
         }
-
-
-//        Next we search the left
-        newPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn() - 1);
-        if (inBounds(newPosition)) {
-            while (inBounds(newPosition) && board.getPiece(newPosition) == null) {
-                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
-                moves.add(finalMove);
-                newPosition = new ChessPosition(newPosition.getRow(), newPosition.getColumn() - 1);
-            }
-            capturePiece(board, myPosition, moves, newPosition);
+        if (inBounds(newPosition) && board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()){
+            moves.add(new ChessMove(myPosition, newPosition, null));
         }
-
-
-//        Next we search up
-        newPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn());
-        if (inBounds(newPosition)) {
-            while (inBounds(newPosition) && board.getPiece(newPosition) == null) {
-                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
-                moves.add(finalMove);
-                newPosition = new ChessPosition(newPosition.getRow() + 1, newPosition.getColumn());
-            }
-            capturePiece(board, myPosition, moves, newPosition);
-        }
-
-
-//        Next we search down
-        newPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn());
-        if (inBounds(newPosition)) {
-            while (inBounds(newPosition) && board.getPiece(newPosition) == null) {
-                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
-                moves.add(finalMove);
-                newPosition = new ChessPosition(newPosition.getRow() - 1, newPosition.getColumn());
-            }
-            capturePiece(board, myPosition, moves, newPosition);
-        }
-
-
-        return moves;
     }
 
-    private void capturePiece(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, ChessPosition newPosition) {
-        if (inBounds(newPosition) && board.getPiece(newPosition) != null) {
-            if (board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
-                moves.add(finalMove);
-            }
-        }
+    public Collection<ChessMove> generate(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>();
+
+        searchMoves(board, myPosition, moves, 1, 0);
+        searchMoves(board, myPosition, moves, 0, -1);
+        searchMoves(board, myPosition, moves, -1, 0);
+        searchMoves(board, myPosition, moves, 0, 1);
+
+        return moves;
     }
 }

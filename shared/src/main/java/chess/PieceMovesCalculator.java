@@ -2,12 +2,8 @@ package chess;
 
 import java.util.Collection;
 
-/**
- * Helper interface for ChessPiece
- * Includes a subclass for each type of chess piece
- */
 public interface PieceMovesCalculator {
-
-    Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition);
-
+    boolean inBounds(ChessPosition myPosition);
+    void searchMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int rowAdd, int colAdd);
+    Collection<ChessMove> generate(ChessBoard board, ChessPosition myPosition);
 }

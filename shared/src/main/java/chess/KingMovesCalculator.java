@@ -4,98 +4,36 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class KingMovesCalculator implements PieceMovesCalculator{
-    KingMovesCalculator() {}
-
-
-    private boolean canAdd(int row, int column){
-        return row >= 1 && row <= 8 && column >= 1 && column <= 8;
+    public boolean inBounds(ChessPosition myPosition){
+        return myPosition.getRow() >= 1 && myPosition.getRow() <= 8 && myPosition.getColumn() >= 1 && myPosition.getColumn() <= 8;
     }
 
-    private boolean blocked(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition){
-        if (board.getPiece(newPosition) != null){
-            return board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor();
-        }
-        else{
-            return true;
-        }
-    }
-
-    public Collection<ChessMove> calculateMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new ArrayList<>();
+    public void searchMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int rowAdd, int colAdd){
         ChessPosition newPosition;
 
-//        check left
-        if (canAdd(myPosition.getRow(), myPosition.getColumn()-1)){
-            newPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn()-1);
-            if (blocked(board, myPosition, newPosition)) {
-                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
-                moves.add(finalMove);
-            }
+        newPosition = new ChessPosition(myPosition.getRow() + rowAdd, myPosition.getColumn() + colAdd);
+        if (inBounds(newPosition) && board.getPiece(newPosition) == null){
+            moves.add(new ChessMove(myPosition, newPosition, null));
         }
+        else if (inBounds(newPosition) && board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()){
+            moves.add(new ChessMove(myPosition, newPosition, null));
+        }
+    }
 
-//        upper left diag
-        if (canAdd(myPosition.getRow()+1, myPosition.getColumn()-1)){
-            newPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1);
-            if (blocked(board, myPosition, newPosition)) {
-                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
-                moves.add(finalMove);
-            }
-        }
+    public Collection<ChessMove> generate(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>();
 
-//        up
-        if (canAdd(myPosition.getRow()+1, myPosition.getColumn())){
-            newPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
-            if (blocked(board, myPosition, newPosition)) {
-                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
-                moves.add(finalMove);
-            }
-        }
+        searchMoves(board, myPosition, moves, 1, 1);
+        searchMoves(board, myPosition, moves, -1, 1);
+        searchMoves(board, myPosition, moves, -1, -1);
+        searchMoves(board, myPosition, moves, 1, -1);
 
-//        upper right
-        if (canAdd(myPosition.getRow()+1, myPosition.getColumn()+1)){
-            newPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
-            if (blocked(board, myPosition, newPosition)) {
-                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
-                moves.add(finalMove);
-            }
-        }
-
-//        right
-        if (canAdd(myPosition.getRow(), myPosition.getColumn()+1)){
-            newPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn()+1);
-            if (blocked(board, myPosition, newPosition)) {
-                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
-                moves.add(finalMove);
-            }
-        }
-
-//        lower right diag
-        if (canAdd(myPosition.getRow()-1, myPosition.getColumn()+1)){
-            newPosition = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1);
-            if (blocked(board, myPosition, newPosition)) {
-                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
-                moves.add(finalMove);
-            }
-        }
-
-//        down
-        if (canAdd(myPosition.getRow()-1, myPosition.getColumn())){
-            newPosition = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn());
-            if (blocked(board, myPosition, newPosition)) {
-                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
-                moves.add(finalMove);
-            }
-        }
-
-//        lower left diag
-        if (canAdd(myPosition.getRow()-1, myPosition.getColumn()-1)){
-            newPosition = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1);
-            if (blocked(board, myPosition, newPosition)) {
-                ChessMove finalMove = new ChessMove(myPosition, newPosition, null);
-                moves.add(finalMove);
-            }
-        }
+        searchMoves(board, myPosition, moves, 1, 0);
+        searchMoves(board, myPosition, moves, -1, 0);
+        searchMoves(board, myPosition, moves, 0, -1);
+        searchMoves(board, myPosition, moves, 0, 1);
 
         return moves;
     }
 }
+
