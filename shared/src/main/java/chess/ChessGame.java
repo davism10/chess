@@ -99,13 +99,34 @@ public class ChessGame {
     }
 
     /**
+     * Determins if one of the possible moves involves taking a king
+     *
+     * @param moves the potential moves to search through
+     * @return True if the king is captured
+     */
+    public boolean isKing(Collection<ChessMove> moves){
+        for (ChessMove move: moves){
+            if(gameBoard.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING){
+                return true;
+            }
+        }
+    }
+
+    /**
      * Determines if the given team is in check
      *
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        return isInCheckmate(teamColor) && isInStalemate(teamColor);
+        Collection<ChessPosition> possibleMoves = gameBoard.getAllPieces(teamColor);
+        for (ChessPosition move: possibleMoves){
+            Collection<ChessMove> validPieceMoves = validMoves(move);
+            if (isKing(validPieceMoves)){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -115,7 +136,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return isInCheckmate(teamColor) && isInStalemate(teamColor);
     }
 
     /**
