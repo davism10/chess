@@ -52,7 +52,7 @@ public class ChessGame {
         gameBoard.addPiece(move.getEndPosition(), gameBoard.getPiece(move.getStartPosition()));
 //        set old position to null
         gameBoard.addPiece(move.getStartPosition(), null);
-        if (isInCheck(getTeamTurn()) == false){
+        if (!isInCheck(getTeamTurn())){
             shouldAdd = true;
         }
 //        undo
@@ -71,9 +71,13 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Collection<ChessMove> goodMoves =  gameBoard.getPiece(startPosition).pieceMoves(gameBoard, startPosition);
-        Collection<ChessMove> validMoves = new ArrayList<>();
-        for (ChessMove testMove in goodMoves)
-        return goodMoves;
+        Collection<ChessMove> possibleMoves = new ArrayList<>();
+        for (ChessMove testMove : goodMoves){
+            if (tryMove(testMove)){
+                possibleMoves.add(testMove);
+            }
+        }
+        return possibleMoves;
     }
 
 
@@ -84,7 +88,14 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> possibleMoves = validMoves(move.getStartPosition());
+        if (possibleMoves.contains(move)){
+            gameBoard.addPiece(move.getEndPosition(), gameBoard.getPiece(move.getStartPosition()));
+            gameBoard.addPiece(move.getStartPosition(), null);
+        }
+        else {
+            throw new InvalidMoveException("move not valid");
+        }
     }
 
     /**
