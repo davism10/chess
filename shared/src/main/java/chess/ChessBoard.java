@@ -1,6 +1,9 @@
 package chess;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -34,6 +37,24 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return square[position.getRow() - 1][position.getColumn()-1];
+    }
+
+    /**
+     * gets a list of all spots on the board with a piece on them of a specific color
+     *
+     * @param color the other teams color
+     */
+    public Collection<ChessPosition> getAllPieces(ChessGame.TeamColor color){
+        Collection<ChessPosition> goodPieces = new ArrayList<>();
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; i < 8; i++){
+                if (square[i][j].getTeamColor() != color){
+                    goodPieces.add(new ChessPosition(i + 1, j + 1));
+                }
+            }
+        }
+        return goodPieces;
+
     }
 
     /**
