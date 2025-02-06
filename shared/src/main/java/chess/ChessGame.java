@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -41,6 +42,27 @@ public class ChessGame {
     }
 
     /**
+     * Tries a move in a chess game
+     *
+     * @param move chess move to preform
+     */
+    public boolean tryMove(ChessMove move){
+        boolean shouldAdd = false;
+//        move piece
+        gameBoard.addPiece(move.getEndPosition(), gameBoard.getPiece(move.getStartPosition()));
+//        set old position to null
+        gameBoard.addPiece(move.getStartPosition(), null);
+        if (isInCheck(getTeamTurn()) == false){
+            shouldAdd = true;
+        }
+//        undo
+        gameBoard.addPiece(move.getStartPosition(), gameBoard.getPiece(move.getEndPosition()));
+        gameBoard.addPiece(move.getEndPosition(), null);
+
+        return shouldAdd;
+    }
+
+    /**
      * Gets a valid moves for a piece at the given location
      *
      * @param startPosition the piece to get valid moves for
@@ -49,8 +71,11 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Collection<ChessMove> goodMoves =  gameBoard.getPiece(startPosition).pieceMoves(gameBoard, startPosition);
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        for (ChessMove testMove in goodMoves)
         return goodMoves;
     }
+
 
     /**
      * Makes a move in a chess game
@@ -69,7 +94,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return isInCheckmate(teamColor) && isInStalemate(teamColor);
     }
 
     /**
