@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -31,6 +32,28 @@ public class ChessGame {
      */
     public void setTeamTurn(TeamColor team) {
         whoTurn = team;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return Objects.equals(gameBoard, chessGame.gameBoard) && whoTurn == chessGame.whoTurn;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(gameBoard, whoTurn);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessGame{" +
+                "gameBoard=" + gameBoard +
+                ", whoTurn=" + whoTurn +
+                '}';
     }
 
     /**
@@ -99,7 +122,7 @@ public class ChessGame {
     }
 
     /**
-     * Determins if one of the possible moves involves taking a king
+     * Determines if one of the possible moves involves taking a king
      *
      * @param moves the potential moves to search through
      * @return True if the king is captured
@@ -110,6 +133,7 @@ public class ChessGame {
                 return true;
             }
         }
+        return false;
     }
 
     /**
@@ -136,7 +160,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        return isInCheckmate(teamColor) && isInStalemate(teamColor);
+        return isInCheck(teamColor) && isInStalemate(teamColor);
     }
 
     /**
@@ -147,7 +171,8 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessPosition> possibleMoves = gameBoard.getAllPieces(teamColor);
+        return possibleMoves.isEmpty();
     }
 
     /**
