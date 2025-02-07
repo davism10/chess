@@ -47,8 +47,8 @@ public class ChessBoard {
     public Collection<ChessPosition> getAllPieces(ChessGame.TeamColor color){
         Collection<ChessPosition> goodPieces = new ArrayList<>();
         for (int i = 0; i < 8; i++){
-            for (int j = 0; i < 8; i++){
-                if (square[i][j].getTeamColor() != color){
+            for (int j = 0; j < 8; j++){
+                if (square[i][j] != null && square[i][j].getTeamColor() != color){
                     goodPieces.add(new ChessPosition(i + 1, j + 1));
                 }
             }

@@ -65,6 +65,18 @@ public class ChessGame {
     }
 
     /**
+     * Return the other color
+     * @param color
+     * @return
+     */
+    public TeamColor notColor(TeamColor color){
+        if (color == TeamColor.WHITE){
+            return TeamColor.BLACK;
+        }
+        return TeamColor.WHITE;
+    }
+
+    /**
      * Tries a move in a chess game
      *
      * @param move chess move to preform
@@ -129,7 +141,7 @@ public class ChessGame {
      */
     public boolean isKing(Collection<ChessMove> moves){
         for (ChessMove move: moves){
-            if(gameBoard.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING){
+            if(gameBoard.getPiece(move.getEndPosition()) != null && gameBoard.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING){
                 return true;
             }
         }
@@ -145,7 +157,7 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         Collection<ChessPosition> possibleMoves = gameBoard.getAllPieces(teamColor);
         for (ChessPosition move: possibleMoves){
-            Collection<ChessMove> validPieceMoves = validMoves(move);
+            Collection<ChessMove> validPieceMoves = gameBoard.getPiece(move).pieceMoves(gameBoard, move);
             if (isKing(validPieceMoves)){
                 return true;
             }
@@ -160,7 +172,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        return isInCheck(teamColor) && isInStalemate(teamColor);
+        return isInCheck(teamColor) && anyMoves(teamColor);
     }
 
     /**
@@ -171,8 +183,24 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        Collection<ChessPosition> possibleMoves = gameBoard.getAllPieces(teamColor);
-        return possibleMoves.isEmpty();
+        return !isInCheck(teamColor) && anyMoves(teamColor);
+    }
+
+    /**
+     * loops through and sees if there are any valid moves that can be made for a team
+     * @param teamColor the color you want to loop through
+     * @return true if there are no moves and false if there are any moves
+     */
+
+    public boolean anyMoves(TeamColor teamColor) {
+        Collection<ChessPosition> possibleMoves = gameBoard.getAllPieces(notColor(teamColor));
+        for (ChessPosition possibleMove: possibleMoves){
+            Collection<ChessMove> possibleValidMoves = validMoves(possibleMove);
+            if (!possibleValidMoves.isEmpty()){
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
