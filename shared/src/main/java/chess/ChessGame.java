@@ -66,8 +66,8 @@ public class ChessGame {
 
     /**
      * Return the other color
-     * @param color
-     * @return
+     * @param color the color you have
+     * @return the other color
      */
     public TeamColor notColor(TeamColor color){
         if (color == TeamColor.WHITE){
