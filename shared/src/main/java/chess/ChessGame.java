@@ -84,15 +84,16 @@ public class ChessGame {
     public boolean tryMove(ChessMove move){
         boolean shouldAdd = false;
 //        move piece
+        ChessPiece oldPiece = gameBoard.getPiece(move.getEndPosition());
         gameBoard.addPiece(move.getEndPosition(), gameBoard.getPiece(move.getStartPosition()));
 //        set old position to null
         gameBoard.addPiece(move.getStartPosition(), null);
-        if (!isInCheck(getTeamTurn())){
+        if (!isInCheck(gameBoard.getPiece(move.getEndPosition()).getTeamColor())){
             shouldAdd = true;
         }
 //        undo
         gameBoard.addPiece(move.getStartPosition(), gameBoard.getPiece(move.getEndPosition()));
-        gameBoard.addPiece(move.getEndPosition(), null);
+        gameBoard.addPiece(move.getEndPosition(), oldPiece);
 
         return shouldAdd;
     }
@@ -167,9 +168,9 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        Collection<ChessPosition> possibleMoves = gameBoard.getAllPieces(teamColor);
-        for (ChessPosition move: possibleMoves){
-            Collection<ChessMove> validPieceMoves = gameBoard.getPiece(move).pieceMoves(gameBoard, move);
+        Collection<ChessPosition> possiblePosition = gameBoard.getAllPieces(teamColor);
+        for (ChessPosition position: possiblePosition){
+            Collection<ChessMove> validPieceMoves = gameBoard.getPiece(position).pieceMoves(gameBoard, position);
             if (isKing(validPieceMoves)){
                 return true;
             }
