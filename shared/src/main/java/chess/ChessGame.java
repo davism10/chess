@@ -131,7 +131,12 @@ public class ChessGame {
         }
         Collection<ChessMove> possibleMoves = validMoves(move.getStartPosition());
         if (possibleMoves.contains(move)){
-            gameBoard.addPiece(move.getEndPosition(), gameBoard.getPiece(move.getStartPosition()));
+            if (move.getPromotionPiece() == null) {
+                gameBoard.addPiece(move.getEndPosition(), gameBoard.getPiece(move.getStartPosition()));
+            }
+            else{
+                gameBoard.addPiece(move.getEndPosition(), new ChessPiece(getTeamTurn(), move.getPromotionPiece()));
+            }
             gameBoard.addPiece(move.getStartPosition(), null);
             setTeamTurn(notColor(getTeamTurn()));
         }
