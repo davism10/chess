@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class RookMovesCalculator implements PieceMovesCalculator{
-    public boolean inBounds(ChessPosition myPosition){
-        return myPosition.getRow() >= 1 && myPosition.getRow() <= 8 && myPosition.getColumn() >= 1 && myPosition.getColumn() <= 8;
-    }
-
+    @Override
     public void searchMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int rowAdd, int colAdd){
         ChessPosition newPosition;
 
