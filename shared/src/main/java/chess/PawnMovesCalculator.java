@@ -3,11 +3,14 @@ package chess;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class PawnMovesCalculator implements PieceMovesCalculator{
     public void pawnAdd(ChessPosition myPosition, ChessPosition newPosition, Collection<ChessMove> moves, int end){
         if (newPosition.getRow() == end){
-            for (ChessPiece.PieceType pieceType : Arrays.asList(ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN)) {
+            List<ChessPiece.PieceType> possible;
+            possible = Arrays.asList(ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN);
+            for (ChessPiece.PieceType pieceType : possible) {
                 moves.add(new ChessMove(myPosition, newPosition, pieceType));
             }
         }
@@ -18,20 +21,21 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
     }
 
     @Override
-    public void searchMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int rowAdd, int colAdd){
+    public void searchMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int rowAdd, int colAdd) {
         ChessPosition newPosition;
         int end;
 
-        if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE){
+        if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
             end = 8;
-        }
-        else {
+        } else {
             end = 1;
         }
 
         newPosition = new ChessPosition(myPosition.getRow() + rowAdd, myPosition.getColumn() + colAdd);
-        if (inBounds(newPosition) && board.getPiece(newPosition) != null && board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()){
-            pawnAdd(myPosition, newPosition, moves, end);
+        if (inBounds(newPosition) && board.getPiece(newPosition) != null) {
+            if (board.getPiece(newPosition).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                pawnAdd(myPosition, newPosition, moves, end);
+            }
         }
     }
 
@@ -54,8 +58,10 @@ public class PawnMovesCalculator implements PieceMovesCalculator{
         }
 
         newPosition = new ChessPosition(myPosition.getRow() + 2*rowAdd, myPosition.getColumn());
-        if (myPosition.getRow() == start && board.getPiece(newPosition) == null && board.getPiece(new ChessPosition(myPosition.getRow() + rowAdd, myPosition.getColumn())) == null){
-            moves.add(new ChessMove(myPosition, newPosition, null));
+        if (myPosition.getRow() == start && board.getPiece(newPosition) == null) {
+            if (board.getPiece(new ChessPosition(myPosition.getRow() + rowAdd, myPosition.getColumn())) == null) {
+                moves.add(new ChessMove(myPosition, newPosition, null));
+            }
         }
 
         newPosition = new ChessPosition(myPosition.getRow() + rowAdd, myPosition.getColumn());

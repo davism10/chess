@@ -154,8 +154,10 @@ public class ChessGame {
      */
     public boolean isKing(Collection<ChessMove> moves){
         for (ChessMove move: moves){
-            if(gameBoard.getPiece(move.getEndPosition()) != null && gameBoard.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING){
-                return true;
+            if(gameBoard.getPiece(move.getEndPosition()) != null) {
+                if (gameBoard.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING) {
+                    return true;
+                }
             }
         }
         return false;
