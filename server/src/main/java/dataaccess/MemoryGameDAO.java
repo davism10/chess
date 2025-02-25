@@ -21,7 +21,7 @@ public class MemoryGameDAO implements GameDAO{
         return gameDataCollection.values();
     }
 
-    public void updateGame(ChessGame myGame, Integer oldGameID, GameData newGameData){
+    public void updateGame(Integer oldGameID, GameData newGameData){
         gameDataCollection.replace(oldGameID, newGameData);
     }
 
