@@ -8,9 +8,14 @@ import java.util.HashMap;
 
 public class MemoryGameDAO implements GameDAO{
     final private HashMap<Integer, GameData> gameDataCollection = new HashMap<>();
+    int gameID = 1;
 
-    public void createGame(GameData gameData){
-        gameDataCollection.put(gameData.gameID(), gameData);
+    public int createGame(String gameName){
+        int ourGameID = gameID;
+        GameData gameData = new GameData(ourGameID, null, null, gameName, null);
+        gameDataCollection.put(ourGameID, gameData);
+        gameID += 1;
+        return ourGameID;
     }
 
     public GameData getGame(int gameID){

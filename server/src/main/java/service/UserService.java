@@ -36,7 +36,8 @@ public class UserService {
             authMemory.createAuth(new AuthData(authToken, registerRequest.username()));
 
             return new RegisterResult(registerRequest.username(), authToken);
-        } catch (DataAccessException e) {
+        }
+        catch (DataAccessException e) {
             throw new ResponseException(500, "Error: " + e);
         }
 
