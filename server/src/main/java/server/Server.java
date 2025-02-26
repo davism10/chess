@@ -1,6 +1,7 @@
 package server;
 
 import dataaccess.*;
+import exception.ResponseException;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
@@ -24,6 +25,7 @@ public class Server {
         ClearServerHandler clearServerHandler = new ClearServerHandler(clearService);
         UserServerHandler userServerHandler = new UserServerHandler(userService);
         GameServerHandler gameServerHandler = new GameServerHandler(gameService);
+        ExceptionServerHandler exceptionServerHandler = new ExceptionServerHandler();
 
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", clearServerHandler::clearHandler);
@@ -33,6 +35,7 @@ public class Server {
         Spark.get("/game", gameServerHandler::listGamesHandler);
         Spark.post("/game", gameServerHandler::createGameHandler);
         Spark.put("/game", gameServerHandler::joinGameHandler);
+        Spark.exception(ResponseException.class, exceptionServerHandler::exceptionHandler);
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
