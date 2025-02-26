@@ -20,7 +20,7 @@ public class GameServerHandler {
         var listGamesRequest = new ListGamesRequest(req.headers("authorization"));
         try {
             ListGamesResult listGamesResult = gameService.listGames(listGamesRequest);
-            return new Gson().toJson(Map.of("games", listGamesResult));
+            return new Gson().toJson(listGamesResult);
         }
         catch (ResponseException e){
             int error = e.StatusCode();
