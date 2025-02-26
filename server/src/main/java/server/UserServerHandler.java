@@ -1,6 +1,6 @@
 package server;
 
-import Model.*;
+import model.*;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import service.UserService;
@@ -20,7 +20,7 @@ public class UserServerHandler {
             return new Gson().toJson(registerResult);
         }
         catch (ResponseException e){
-            int error = e.StatusCode();
+            int error = e.statusCode();
             res.status(error);
             throw e;
         }
@@ -33,7 +33,7 @@ public class UserServerHandler {
             return new Gson().toJson(loginResult);
         }
         catch (ResponseException e){
-            int error = e.StatusCode();
+            int error = e.statusCode();
             res.status(error);
             throw e;
         }
@@ -47,7 +47,7 @@ public class UserServerHandler {
             return new Gson().toJson(null);
         }
         catch (ResponseException e){
-            int error = e.StatusCode();
+            int error = e.statusCode();
             res.status(error);
             throw e;
         }

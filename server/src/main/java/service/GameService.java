@@ -1,6 +1,6 @@
 package service;
 
-import Model.*;
+import model.*;
 import chess.ChessGame;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
@@ -54,7 +54,9 @@ public class GameService {
     }
 
     public void joinGame(JoinGameRequest joinGameRequest) throws ResponseException {
-        if (joinGameRequest.gameID() == null || joinGameRequest.authToken() == null || (joinGameRequest.playerColor() != ChessGame.TeamColor.BLACK && joinGameRequest.playerColor() != ChessGame.TeamColor.WHITE)){
+        if (joinGameRequest.gameID() == null || joinGameRequest.authToken() == null ||
+                (joinGameRequest.playerColor() != ChessGame.TeamColor.BLACK && joinGameRequest.playerColor() !=
+                        ChessGame.TeamColor.WHITE)){
             throw new ResponseException(400, "Error: bad request");
         }
         try {
@@ -64,7 +66,8 @@ public class GameService {
             }
 
             GameData gameData = gameMemory.getGame(joinGameRequest.gameID());
-            if ((joinGameRequest.playerColor() == ChessGame.TeamColor.BLACK && gameData.blackUsername() != null) || (joinGameRequest.playerColor() == ChessGame.TeamColor.WHITE && gameData.whiteUsername() != null)) {
+            if ((joinGameRequest.playerColor() == ChessGame.TeamColor.BLACK && gameData.blackUsername() != null) ||
+                    (joinGameRequest.playerColor() == ChessGame.TeamColor.WHITE && gameData.whiteUsername() != null)) {
                 throw new ResponseException(403, "Error: already taken");
             }
 

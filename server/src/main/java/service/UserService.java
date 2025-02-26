@@ -1,6 +1,6 @@
 package service;
 
-import Model.*;
+import model.*;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;

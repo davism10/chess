@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ResponseException extends Exception {
-    final private int statusCode;
+    final private int myStatusCode;
 
     public ResponseException(int statusCode, String message) {
         super(message);
-        this.statusCode = statusCode;
+        this.myStatusCode = statusCode;
     }
 
     public String toJson() {
@@ -26,7 +26,7 @@ public class ResponseException extends Exception {
         return new ResponseException(status, message);
     }
 
-    public int StatusCode() {
-        return statusCode;
+    public int statusCode() {
+        return myStatusCode;
     }
 }

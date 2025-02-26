@@ -1,6 +1,6 @@
 package dataaccess;
 
-import Model.GameData;
+import model.GameData;
 import chess.ChessGame;
 
 import java.util.Collection;
@@ -28,10 +28,6 @@ public class MemoryGameDAO implements GameDAO{
 
     public void updateGame(Integer oldGameID, GameData newGameData){
         gameDataCollection.replace(oldGameID, newGameData);
-    }
-
-    public void clearGame(int gameID){
-        gameDataCollection.remove(gameID);
     }
 
     public void clearAll(){

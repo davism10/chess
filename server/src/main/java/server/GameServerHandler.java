@@ -1,13 +1,11 @@
 package server;
 
-import Model.*;
+import model.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import exception.ResponseException;
 import service.GameService;
 import spark.*;
-
-import java.util.Map;
 
 public class GameServerHandler {
     final private GameService gameService;
@@ -23,7 +21,7 @@ public class GameServerHandler {
             return new Gson().toJson(listGamesResult);
         }
         catch (ResponseException e){
-            int error = e.StatusCode();
+            int error = e.statusCode();
             res.status(error);
             throw e;
         }
@@ -40,7 +38,7 @@ public class GameServerHandler {
             return new Gson().toJson(createGameResult);
         }
         catch (ResponseException e){
-            int error = e.StatusCode();
+            int error = e.statusCode();
             res.status(error);
             throw e;
         }
@@ -57,7 +55,7 @@ public class GameServerHandler {
             return new Gson().toJson(null);
         }
         catch (ResponseException e){
-            int error = e.StatusCode();
+            int error = e.statusCode();
             res.status(error);
             throw e;
         }

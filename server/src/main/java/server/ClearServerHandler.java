@@ -21,7 +21,7 @@ public class ClearServerHandler {
             return new Gson().toJson(null);
         }
         catch (ResponseException e){
-            int error = e.StatusCode();
+            int error = e.statusCode();
             res.status(error);
             throw e;
         }

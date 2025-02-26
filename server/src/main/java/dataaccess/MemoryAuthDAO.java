@@ -1,7 +1,6 @@
 package dataaccess;
 
-import Model.AuthData;
-import Model.GameData;
+import model.AuthData;
 
 import java.util.HashMap;
 

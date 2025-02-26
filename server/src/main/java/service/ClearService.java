@@ -1,15 +1,10 @@
 package service;
 
-import Model.AuthData;
-import Model.GameData;
-import Model.ListGamesResult;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.UserDAO;
 import exception.ResponseException;
-
-import java.util.Collection;
 
 public class ClearService {
     final private GameDAO gameMemory;
