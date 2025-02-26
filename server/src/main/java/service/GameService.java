@@ -34,7 +34,7 @@ public class GameService {
         }
     }
 
-    public CreateGameResult CreateGame(CreateGameRequest createGameRequest) throws ResponseException {
+    public CreateGameResult createGame(CreateGameRequest createGameRequest) throws ResponseException {
         if (createGameRequest.authToken() == null || createGameRequest.gameName() == null){
             throw new ResponseException(400, "Error: bad request");
         }

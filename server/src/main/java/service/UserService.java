@@ -6,6 +6,7 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import exception.ResponseException;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
@@ -44,12 +45,13 @@ public class UserService {
     }
 
     public LoginResult login(LoginRequest loginRequest) throws ResponseException {
-//        if (loginRequest.username() == null || loginRequest.password() == null){
-//            throw new ResponseException(400, "Error: bad request");
-//        }
+
         try{
             UserData user = userMemory.getUser(loginRequest.username());
             if (user == null){
+                throw new ResponseException(401, "Error: username not found");
+            }
+            if (!Objects.equals(user.password(), loginRequest.password())){
                 throw new ResponseException(401, "Error: unauthorized");
             }
             String authToken = generateToken();
