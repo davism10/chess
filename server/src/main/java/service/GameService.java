@@ -55,8 +55,7 @@ public class GameService {
 
     public void joinGame(JoinGameRequest joinGameRequest) throws ResponseException {
         if (joinGameRequest.gameID() == null || joinGameRequest.authToken() == null ||
-                (joinGameRequest.playerColor() != ChessGame.TeamColor.BLACK && joinGameRequest.playerColor() !=
-                        ChessGame.TeamColor.WHITE)){
+                joinGameRequest.playerColor() == null){
             throw new ResponseException(400, "Error: bad request");
         }
         try {
