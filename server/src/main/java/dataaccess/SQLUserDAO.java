@@ -1,6 +1,9 @@
 package dataaccess;
 
+import exception.ResponseException;
 import model.UserData;
+
+import java.sql.SQLException;
 
 public class SQLUserDAO implements UserDAO{
     public SQLUserDAO() throws DataAccessException {
@@ -34,14 +37,17 @@ public class SQLUserDAO implements UserDAO{
             """
     };
 
-//    private void configureDatabase() throws DataAccessException {
-//        try (var conn = DatabaseManager.getConnection()) {
-//            try (var preparedStatement = conn.prepareStatement("SELECT 1+1")) {
-//                var rs = preparedStatement.executeQuery();
-//                rs.next();
-//                System.out.println(rs.getInt(1));
-//            }
-//        }
-//    }
+    private void configureDatabase() throws DataAccessException, ResponseException {
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new ResponseException(500, String.format("Unable to configure database: %s", ex.getMessage()));
+        }
+    }
 
 }
