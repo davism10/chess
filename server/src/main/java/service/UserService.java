@@ -5,6 +5,7 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import exception.ResponseException;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -51,7 +52,8 @@ public class UserService {
             if (user == null){
                 throw new ResponseException(401, "Error: username not found");
             }
-            if (!Objects.equals(user.password(), loginRequest.password())){
+            String hashedPassword = BCrypt.hashpw(loginRequest.password(), BCrypt.gensalt());
+            if (!Objects.equals(user.password(), hashedPassword)){
                 throw new ResponseException(401, "Error: unauthorized");
             }
             String authToken = generateToken();
