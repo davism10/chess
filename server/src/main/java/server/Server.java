@@ -14,9 +14,14 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        GameDAO gameMemory = new MemoryGameDAO();
-        UserDAO userMemory = new MemoryUserDAO();
-        AuthDAO authMemory = new MemoryAuthDAO();
+        try {
+            GameDAO gameMemory = new MemoryGameDAO();
+            UserDAO userMemory = new SQLUserDAO();
+            AuthDAO authMemory = new MemoryAuthDAO();
+        }
+        catch (DataAccessException e){
+
+        }
 
         ClearService clearService = new ClearService(gameMemory, authMemory, userMemory);
         UserService userService = new UserService(userMemory, authMemory);
