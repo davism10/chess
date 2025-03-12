@@ -9,19 +9,14 @@ import spark.*;
 
 public class Server {
 
-    public int run(int desiredPort) {
+    public int run(int desiredPort) throws DataAccessException {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
 
-        try {
-            GameDAO gameMemory = new MemoryGameDAO();
-            UserDAO userMemory = new SQLUserDAO();
-            AuthDAO authMemory = new MemoryAuthDAO();
-        }
-        catch (DataAccessException e){
-
-        }
+        GameDAO gameMemory = new MemoryGameDAO();
+        UserDAO userMemory = new SQLUserDAO();
+        AuthDAO authMemory = new MemoryAuthDAO();
 
         ClearService clearService = new ClearService(gameMemory, authMemory, userMemory);
         UserService userService = new UserService(userMemory, authMemory);
