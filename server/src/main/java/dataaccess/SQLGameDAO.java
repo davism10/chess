@@ -35,6 +35,9 @@ public class SQLGameDAO implements GameDAO {
                 if (rs.next()) {
                     return rs.getInt(1);
                 }
+                else {
+                    return 0;
+                }
             }
 
         } catch (SQLException e) {
@@ -64,65 +67,84 @@ public class SQLGameDAO implements GameDAO {
         return null;
     }
 
-public Collection<GameData> listGames() throws DataAccessException {
-    var result = new ArrayList<GameData>();
-    try (var conn = DatabaseManager.getConnection()) {
-        var statement = "SELECT gameid, json FROM gameData";
-        try (var ps = conn.prepareStatement(statement)) {
-            try (var rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    var gameID = rs.getInt("gameid");
-                    var whiteUsernameData = rs.getString("whiteusername");
-                    var blackUserNameData = rs.getString("blackusername");
-                    var gameNameData = rs.getString("gamename");
-                    var chessGameData = rs.getString("chessgame");
-                    ChessGame chessGame = new Gson().fromJson(chessGameData, ChessGame.class);
-                    GameData thisGame =  new GameData(gameID, whiteUsernameData, blackUserNameData, gameNameData, chessGame);
-                    result.add(thisGame);
+    public Collection<GameData> listGames() throws DataAccessException {
+        var result = new ArrayList<GameData>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameid, json FROM gameData";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        var gameID = rs.getInt("gameid");
+                        var whiteUsernameData = rs.getString("whiteusername");
+                        var blackUserNameData = rs.getString("blackusername");
+                        var gameNameData = rs.getString("gamename");
+                        var chessGameData = rs.getString("chessgame");
+                        ChessGame chessGame = new Gson().fromJson(chessGameData, ChessGame.class);
+                        GameData thisGame =  new GameData(gameID, whiteUsernameData, blackUserNameData, gameNameData, chessGame);
+                        result.add(thisGame);
+                    }
                 }
             }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
-    } catch (Exception e) {
-        throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        return result;
+
     }
-    return result;
 
-}
-
-public void updateGame(Integer oldGameID, GameData newGameData) {
-
-
-}
-
-public void clearAll() {
-
-}
-
-private final String[] createStatements = {
-        """
-            CREATE TABLE IF NOT EXISTS  gameData (
-              gameid INT NOT NULL AUTO_INCREMENT,
-              whiteusername VARCHAR(256),
-              blackusername VARCHAR(256),
-              gamename VARCHAR(256) NOT NULL,
-              chessgame TEXT NOT NULL,
-              PRIMARY KEY (gameid),
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
-};
-
-private void configureDatabase() throws DataAccessException {
-    DatabaseManager.createDatabase();
-    try (var conn = DatabaseManager.getConnection()) {
-        for (var statement : createStatements) {
-            try (var preparedStatement = conn.prepareStatement(statement)) {
-                preparedStatement.executeUpdate();
+    public void updateGame(Integer oldGameID, GameData newGameData) throws DataAccessException {
+        try(var conn = DatabaseManager.getConnection()) {
+            String statement = "UPDATE gameData SET whiteusername = ?, blackusername = ?, gamename = ?, chessgame = ? WHERE gameid = ?";
+            try (var ps = conn.prepareStatement(statement)) {
+                    ps.setString(1, newGameData.whiteUsername());
+                    ps.setString(2, newGameData.blackUsername());
+                    ps.setString(3, newGameData.gameName());
+                    ps.setString(4, new Gson().toJson(newGameData.game())); // Convert ChessGame to JSON
+                    ps.setInt(5, oldGameID);
             }
         }
-    } catch (SQLException ex) {
-        throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-    }
-}
+        catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
 
-}
+    }
+
+    public void clearAll() throws DataAccessException {
+        var statement = "TRUNCATE gameData";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+        }
+    }
+
+    private final String[] createStatements = {
+            """
+                CREATE TABLE IF NOT EXISTS  gameData (
+                  gameid INT NOT NULL AUTO_INCREMENT,
+                  whiteusername VARCHAR(256),
+                  blackusername VARCHAR(256),
+                  gamename VARCHAR(256) NOT NULL,
+                  chessgame TEXT NOT NULL,
+                  PRIMARY KEY (gameid),
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+                """
+    };
+
+    private void configureDatabase() throws DataAccessException {
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()) {
+            for (var statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+        }
+    }
+
+    }
 

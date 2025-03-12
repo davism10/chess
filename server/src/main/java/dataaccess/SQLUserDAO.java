@@ -17,7 +17,7 @@ public class SQLUserDAO implements UserDAO{
     }
 
     public void clear(String username) throws DataAccessException{
-        var statement = "DELETE FROM userData WHERE id=?";
+        var statement = "DELETE FROM userData WHERE username=?";
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 ps.setString(1, username);
@@ -29,7 +29,7 @@ public class SQLUserDAO implements UserDAO{
     }
 
     public void clearAll() throws DataAccessException {
-        var statement = "TRUNCATE pet";
+        var statement = "TRUNCATE usesrData";
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 ps.executeUpdate();
