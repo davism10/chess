@@ -11,7 +11,7 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 public class SQLAuthDAO implements AuthDAO{
     public SQLAuthDAO() throws DataAccessException{
-        configureDatabase();
+        ConfigureDatabase.configureDatabase(createStatements);
     }
 
     public void createAuth(AuthData authData) throws DataAccessException {
@@ -82,17 +82,6 @@ public class SQLAuthDAO implements AuthDAO{
             """
     };
 
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
     }
 
-}
+

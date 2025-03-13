@@ -73,9 +73,6 @@ public class GameSQLTests {
     @Order(7)
     public void listGameSuccess() throws DataAccessException {
         var allGames = gameMemory.listGames();
-//        Collection<GameData> trueGames = new ArrayList<>();
-//        trueGames.add(gameDataFirst);
-//        trueGames.add(gameDataSecond);
         Assertions.assertNotNull(allGames);
     }
 
