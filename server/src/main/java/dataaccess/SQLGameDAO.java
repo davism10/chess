@@ -25,8 +25,8 @@ public class SQLGameDAO implements GameDAO {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 ChessGame myGame = new ChessGame();
-                ps.setString(1, null);
-                ps.setString(2, null);
+                ps.setNull(1, java.sql.Types.VARCHAR);
+                ps.setNull(2, java.sql.Types.VARCHAR);
                 ps.setString(3, gameName);
                 ps.setString(4, new Gson().toJson(myGame));
                 ps.executeUpdate();
@@ -47,7 +47,7 @@ public class SQLGameDAO implements GameDAO {
 
     public GameData getGame(int gameID) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameid FROM gameData WHERE gameid=?";
+            var statement = "SELECT gameid, whiteusername, blackusername, gamename, chessgame FROM gameData WHERE gameid=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setInt(1, gameID);
                 try (var rs = ps.executeQuery()) {
@@ -59,18 +59,20 @@ public class SQLGameDAO implements GameDAO {
                         ChessGame chessGame = new Gson().fromJson(chessGameData, ChessGame.class);
                         return new GameData(gameID, whiteUsernameData, blackUserNameData, gameNameData, chessGame);
                     }
+                    else{
+                        throw new DataAccessException("game id not found");
+                    }
                 }
             }
         } catch (Exception e) {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
-        return null;
     }
 
     public Collection<GameData> listGames() throws DataAccessException {
         var result = new ArrayList<GameData>();
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT gameid, json FROM gameData";
+            var statement = "SELECT gameid, whiteusername, blackusername, gamename, chessgame  FROM gameData";
             try (var ps = conn.prepareStatement(statement)) {
                 try (var rs = ps.executeQuery()) {
                     while (rs.next()) {
@@ -83,12 +85,12 @@ public class SQLGameDAO implements GameDAO {
                         GameData thisGame =  new GameData(gameID, whiteUsernameData, blackUserNameData, gameNameData, chessGame);
                         result.add(thisGame);
                     }
+                    return result;
                 }
             }
         } catch (Exception e) {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
-        return result;
 
     }
 
@@ -101,6 +103,7 @@ public class SQLGameDAO implements GameDAO {
                     ps.setString(3, newGameData.gameName());
                     ps.setString(4, new Gson().toJson(newGameData.game())); // Convert ChessGame to JSON
                     ps.setInt(5, oldGameID);
+                    ps.executeUpdate();
             }
         }
         catch (Exception e) {

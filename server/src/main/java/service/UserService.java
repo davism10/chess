@@ -52,8 +52,8 @@ public class UserService {
             if (user == null){
                 throw new ResponseException(401, "Error: username not found");
             }
-            String hashedPassword = BCrypt.hashpw(loginRequest.password(), BCrypt.gensalt());
-            if (!Objects.equals(user.password(), hashedPassword)){
+//            String hashedPassword = BCrypt.hashpw(loginRequest.password(), BCrypt.gensalt());
+            if (!BCrypt.checkpw(loginRequest.password(), user.password())){
                 throw new ResponseException(401, "Error: unauthorized");
             }
             String authToken = generateToken();

@@ -17,7 +17,7 @@ public class SQLAuthDAO implements AuthDAO{
     public void createAuth(AuthData authData) throws DataAccessException {
         var statement = "INSERT INTO authData (authtoken, username) VALUES (?, ?)";
         try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
+            try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, authData.authToken());
                 ps.setString(2, authData.username());
                 ps.executeUpdate();
@@ -30,7 +30,7 @@ public class SQLAuthDAO implements AuthDAO{
 
     public AuthData getAuth(String authToken) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username FROM authData WHERE authToken=?";
+            var statement = "SELECT authtoken, username FROM authData WHERE authtoken=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, authToken);
                 try (var rs = ps.executeQuery()) {
@@ -39,7 +39,7 @@ public class SQLAuthDAO implements AuthDAO{
                         return new AuthData(authToken, usernameData);
                     }
                     else {
-                        throw new DataAccessException("authToken not found");
+                        return null;
                     }
                 }
             }
@@ -47,13 +47,12 @@ public class SQLAuthDAO implements AuthDAO{
         catch (Exception e) {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
-//        throw new DataAccessException("authToken not found");
     }
 
     public void deleteAuth(String authToken) throws DataAccessException {
-        var statement = "DELETE FROM authData WHERE authToken=?";
+        var statement = "DELETE FROM authData WHERE authtoken=?";
         try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
+            try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, authToken);
                 ps.executeUpdate();
             }
@@ -63,9 +62,9 @@ public class SQLAuthDAO implements AuthDAO{
     }
 
     public void deleteAllAuth() throws DataAccessException {
-        var statement = "TRUNCATE gameData";
+        var statement = "TRUNCATE authData";
         try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
+            try (var ps = conn.prepareStatement(statement)) {
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
@@ -75,7 +74,7 @@ public class SQLAuthDAO implements AuthDAO{
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS  userData (
+            CREATE TABLE IF NOT EXISTS  authData (
               authtoken VARCHAR(256) NOT NULL,
               username VARCHAR(256) NOT NULL,
               PRIMARY KEY (authtoken)

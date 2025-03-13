@@ -29,7 +29,7 @@ public class SQLUserDAO implements UserDAO{
     }
 
     public void clearAll() throws DataAccessException {
-        var statement = "TRUNCATE usesrData";
+        var statement = "TRUNCATE userData";
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 ps.executeUpdate();
@@ -41,7 +41,7 @@ public class SQLUserDAO implements UserDAO{
 
     public UserData getUser(String username) throws DataAccessException{
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username FROM userData WHERE username=?";
+            var statement = "SELECT username, password, email FROM userData WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
@@ -61,7 +61,17 @@ public class SQLUserDAO implements UserDAO{
     public void createUser(UserData userData) throws DataAccessException{
         var statement = "INSERT INTO userData (username, password, email) VALUES (?, ?, ?)";
         String hashedPassword = BCrypt.hashpw(userData.password(), BCrypt.gensalt());
-        executeUpdate(statement, userData.username(), hashedPassword, userData.email());
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, userData.username());
+                ps.setString(2, hashedPassword);
+                ps.setString(3, userData.email());
+                ps.executeUpdate();
+
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
+        }
     }
 
     private final String[] createStatements = {
@@ -75,19 +85,6 @@ public class SQLUserDAO implements UserDAO{
             """
     };
 
-    private void executeUpdate(String statement, String username, String password, String email) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                ps.setString(1, username);
-                ps.setString(2, password);
-                ps.setString(3, email);
-                ps.executeUpdate();
-
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
-        }
-    }
 
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
