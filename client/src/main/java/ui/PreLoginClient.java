@@ -2,7 +2,6 @@ package ui;
 import exception.ResponseException;
 import net.ClientCommunicator;
 import net.ServerFacade;
-import net.WebSocketFacade;
 
 import java.util.Arrays;
 
