@@ -12,7 +12,6 @@ public class PreLoginClient implements ClientObject {
     private final String serverUrl;
     private final ClientCommunicator notificationHandler;
     private WebSocketFacade ws;
-    private State state = State.SIGNEDOUT;
     boolean pre;
     boolean post;
     boolean game;
@@ -48,6 +47,20 @@ public class PreLoginClient implements ClientObject {
         } catch (ResponseException ex) {
             return ex.getMessage();
         }
+    }
+
+    public String register(String... params) throws ResponseException {
+        if (params.length >= 3) {
+            visitorName = String.join("-", params);
+            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            ws.enterPetShop(visitorName);
+            return String.format("You registered as %s.", visitorName);
+        }
+        throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
+    }
+
+    public String login(String... params) throws ResponseException {
+
     }
 
     public boolean getPost() {

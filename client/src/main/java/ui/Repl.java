@@ -1,13 +1,11 @@
 package ui;
 //
 import client.websocket.NotificationHandler;
-import webSocketMessages.Notification;
-
 import net.ClientCommunicator;
+import webSocketMessages.Notification;
 
 import java.util.Scanner;
 import static com.sun.org.apache.xalan.internal.xsltc.compiler.Constants.RESET;
-import static ui.EscapeSequences.*;
 
 public class Repl implements ClientCommunicator {
     private ClientObject client;
