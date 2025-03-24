@@ -2,7 +2,6 @@ package ui;
 import exception.ResponseException;
 import net.ClientCommunicator;
 import net.ServerFacade;
-import net.WebSocketFacade;
 
 import java.util.Arrays;
 
@@ -11,7 +10,6 @@ public class PostLoginClient implements ClientObject {
     private final ServerFacade server;
     private final String serverUrl;
     private final ClientCommunicator notificationHandler;
-    private WebSocketFacade ws;
     boolean pre;
     boolean post;
     boolean game;
@@ -27,9 +25,12 @@ public class PostLoginClient implements ClientObject {
 
     public String help() {
         return """
-                    register <USERNAME> <PASSWORD> <EMAIL> - to create an account
-                    login <USERNAME> <PASSWORD> - to play chess
-                    quite - playing chess
+                    create <NAME> - a game
+                    list - games
+                    join <ID> [WHITE|BLACK] - a game
+                    observe <ID> - a game
+                    logout - when you are done
+                    quit - playing chess
                     help - with possible commands
                     """;
     }
@@ -39,8 +40,11 @@ public class PostLoginClient implements ClientObject {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "register" -> register(params);
-                case "login" -> login(params);
+                case "create" -> create(params);
+                case "list" -> list(params);
+                case "join" -> join(params);
+                case "observe" -> observe(params);
+                case "logout" -> logout(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -49,17 +53,21 @@ public class PostLoginClient implements ClientObject {
         }
     }
 
-    public String register(String... params) throws ResponseException {
-        if (params.length >= 3) {
-            visitorName = String.join("-", params);
-            ws = new WebSocketFacade(serverUrl, notificationHandler);
-            ws.enterPetShop(visitorName);
-            return String.format("You registered as %s.", visitorName);
-        }
-        throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
+    public String create(String... params) throws ResponseException {
+
     }
 
-    public String login(String... params) throws ResponseException {
+    public String list(String... params) throws ResponseException {
+
+    }
+    public String join(String... params) throws ResponseException {
+
+    }
+    public String observe(String... params) throws ResponseException {
+
+    }
+
+    public String logout(String... params) throws ResponseException {
 
     }
 
