@@ -1,8 +1,8 @@
 package ui;
 //
-import client.websocket.NotificationHandler;
+//import client.websocket.NotificationHandler;
 import net.ClientCommunicator;
-import webSocketMessages.Notification;
+//import webSocketMessages.Notification;
 
 import java.util.Scanner;
 import static com.sun.org.apache.xalan.internal.xsltc.compiler.Constants.RESET;

@@ -1,6 +1,6 @@
 package net;
-import webSocketMessages.Notification;
+//import webSocketMessages.Notification;
 
 public interface ClientCommunicator {
-    void notify(Notification notification);
+//    void notify(Notification notification);
 }

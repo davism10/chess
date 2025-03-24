@@ -10,7 +10,7 @@ public class PreLoginClient implements ClientObject {
     private final ServerFacade server;
     private final String serverUrl;
     private final ClientCommunicator notificationHandler;
-    private WebSocketFacade ws;
+//    private WebSocketFacade ws;
     boolean pre;
     boolean post;
     boolean game;
