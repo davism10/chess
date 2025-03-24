@@ -28,7 +28,7 @@ public class PreLoginClient implements ClientObject {
             return """
                     register <USERNAME> <PASSWORD> <EMAIL> - to create an account
                     login <USERNAME> <PASSWORD> - to play chess
-                    quite - playing chess
+                    quit - playing chess
                     help - with possible commands
                     """;
     }
