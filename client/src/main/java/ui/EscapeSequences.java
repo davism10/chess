@@ -47,6 +47,20 @@ public class EscapeSequences {
     public static final String SET_BG_COLOR_WHITE = SET_BG_COLOR + "15m";
     public static final String RESET_BG_COLOR = UNICODE_ESCAPE + "[49m";
 
+    public static final String SET_BG_COLOR_PINK = SET_BG_COLOR + "218m";       // Soft Pink
+    public static final String SET_BG_COLOR_HOT_PINK = SET_BG_COLOR + "205m";   // Vibrant Hot Pink
+    public static final String SET_BG_COLOR_ROSE = SET_BG_COLOR + "211m";       // Rose Pink
+    public static final String SET_BG_COLOR_LIGHT_PINK = SET_BG_COLOR + "217m"; // Light Pink
+    public static final String SET_BG_COLOR_DEEP_PINK = SET_BG_COLOR + "198m";  // Deep Pink
+    public static final String SET_BG_COLOR_SALMON = SET_BG_COLOR + "209m";
+
+    public static final String SET_TEXT_COLOR_PINK = SET_TEXT_COLOR + "218m";       // Soft Pink
+    public static final String SET_TEXT_COLOR_HOT_PINK = SET_TEXT_COLOR + "205m";   // Vibrant Hot Pink
+    public static final String SET_TEXT_COLOR_ROSE = SET_TEXT_COLOR + "211m";       // Rose Pink
+    public static final String SET_TEXT_COLOR_LIGHT_PINK = SET_TEXT_COLOR + "217m"; // Light Pink
+    public static final String SET_TEXT_COLOR_DEEP_PINK = SET_TEXT_COLOR + "198m";  // Deep Pink
+    public static final String SET_TEXT_COLOR_SALMON = SET_TEXT_COLOR + "209m";
+
     public static final String WHITE_KING = " ♔ ";
     public static final String WHITE_QUEEN = " ♕ ";
     public static final String WHITE_BISHOP = " ♗ ";
