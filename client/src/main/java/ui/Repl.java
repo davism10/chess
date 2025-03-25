@@ -1,12 +1,8 @@
 package ui;
-//
-//import client.websocket.NotificationHandler;
 import net.ClientCommunicator;
 import net.ServerFacade;
-//import webSocketMessages.Notification;
-
 import java.util.Scanner;
-import static com.sun.org.apache.xalan.internal.xsltc.compiler.Constants.RESET;
+//import static com.sun.org.apache.xalan.internal.xsltc.compiler.Constants.RESET;
 
 public class Repl implements ClientCommunicator {
     private ClientObject client;
@@ -63,13 +59,10 @@ public class Repl implements ClientCommunicator {
         client = newClient;
     }
 
-//    public void notify(Notification notification) {
-//        System.out.println(RED + notification.message());
-//        printPrompt();
-//    }
 
     private void printPrompt() {
-        System.out.print("\n" + RESET + ">>> " + "\u001B[38;2;34;139;34m");
+//        System.out.print("\n" + RESET + ">>> " + "\u001B[38;2;34;139;34m");
+        System.out.print("\n" +  ">>> " + "\u001B[38;2;34;139;34m");
     }
 
 }

@@ -3,4 +3,5 @@ package net;
 
 public interface ClientCommunicator {
 //    void notify(Notification notification);
+    void run();
 }
