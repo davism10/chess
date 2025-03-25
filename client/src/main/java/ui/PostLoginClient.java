@@ -1,5 +1,4 @@
 package ui;
-import chess.ChessBoard;
 import chess.ChessGame;
 import exception.ResponseException;
 import model.*;
@@ -22,7 +21,7 @@ public class PostLoginClient implements ClientObject {
     boolean pre;
     boolean post;
     boolean game;
-    private Map<Integer, GameData> IDs = null;
+    private Map<Integer, GameData> iDs = null;
 
     public PostLoginClient(String serverUrl, ClientCommunicator notificationHandler, ServerFacade serverFacade){
         server = serverFacade;
@@ -98,19 +97,19 @@ public class PostLoginClient implements ClientObject {
             myMap.put(i, game);
             i += 1;
         }
-        this.IDs = myMap;
+        this.iDs = myMap;
         return byteArrayOutputStream.toString(StandardCharsets.UTF_8);
     }
     public String join(String... params) throws ResponseException {
         if (params.length == 2 && (params[1].equals("WHITE") || params[1].equals("BLACK"))){
             ui.ChessBoard draw = new ui.ChessBoard();
             if (params[1].equals("WHITE")) {
-                server.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, IDs.get(Integer.parseInt(params[0])).gameID(), authToken));
-                draw.drawWhite(IDs.get(Integer.parseInt(params[0])).game().getBoard());
+                server.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, iDs.get(Integer.parseInt(params[0])).gameID(), authToken));
+                draw.drawWhite(iDs.get(Integer.parseInt(params[0])).game().getBoard());
             }
             else {
-                server.joinGame(new JoinGameRequest(ChessGame.TeamColor.BLACK, IDs.get(Integer.parseInt(params[0])).gameID(), authToken));
-                draw.drawBlack(IDs.get(Integer.parseInt(params[0])).game().getBoard());
+                server.joinGame(new JoinGameRequest(ChessGame.TeamColor.BLACK, iDs.get(Integer.parseInt(params[0])).gameID(), authToken));
+                draw.drawBlack(iDs.get(Integer.parseInt(params[0])).game().getBoard());
             }
             return String.format("You joined the game %s.", params[0]);
         }
@@ -120,7 +119,7 @@ public class PostLoginClient implements ClientObject {
         if (params.length == 1){
             try {
                 ui.ChessBoard draw = new ui.ChessBoard();
-                draw.drawWhite(IDs.get(params[1]).game().getBoard());
+                draw.drawWhite(iDs.get(params[1]).game().getBoard());
                 return String.format("You are observing the game %s.", params[0]);
             }
             catch(Exception e) {

@@ -7,53 +7,52 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
 import static ui.EscapeSequences.*;
 
 
 public class ChessBoard {
     private static final String EMPTY = "   ";
-    private static final String whiteKing = WHITE_KING;
-    private static final String whiteQueen = WHITE_QUEEN;
-    private static final String whiteRook = WHITE_ROOK;
-    private static final String whiteBishop = WHITE_BISHOP;
-    private static final String whiteKnight = WHITE_KNIGHT;
-    private static final String whitePawn = WHITE_PAWN;
+    private static final String WhiteKing = WHITE_KING;
+    private static final String WhiteQueen = WHITE_QUEEN;
+    private static final String WhiteRook = WHITE_ROOK;
+    private static final String WhiteBishop = WHITE_BISHOP;
+    private static final String WhiteKnight = WHITE_KNIGHT;
+    private static final String WhitePawn = WHITE_PAWN;
 
-    private static final String blackKing = BLACK_KING;
-    private static final String blackQueen = BLACK_QUEEN;
-    private static final String blackRook = BLACK_ROOK;
-    private static final String blackBishop = BLACK_BISHOP;
-    private static final String blackKnight = BLACK_KNIGHT;
-    private static final String blackPawn = BLACK_PAWN;
+    private static final String BlackKing = BLACK_KING;
+    private static final String BlackQueen = BLACK_QUEEN;
+    private static final String BlackRook = BLACK_ROOK;
+    private static final String BlackBishop = BLACK_BISHOP;
+    private static final String BlackKnight = BLACK_KNIGHT;
+    private static final String BlackPawn = BLACK_PAWN;
 
     // Maps for White & Black pieces
-    private static final Map<ChessPiece.PieceType, String> whiteMap = new HashMap<>();
-    private static final Map<ChessPiece.PieceType, String> blackMap = new HashMap<>();
+    private static final Map<ChessPiece.PieceType, String> WhiteMap = new HashMap<>();
+    private static final Map<ChessPiece.PieceType, String> BlackMap = new HashMap<>();
 
     static {
         // Populate White pieces map
-        whiteMap.put(ChessPiece.PieceType.KING, whiteKing);
-        whiteMap.put(ChessPiece.PieceType.QUEEN, whiteQueen);
-        whiteMap.put(ChessPiece.PieceType.ROOK, whiteRook);
-        whiteMap.put(ChessPiece.PieceType.BISHOP, whiteBishop);
-        whiteMap.put(ChessPiece.PieceType.KNIGHT, whiteKnight);
-        whiteMap.put(ChessPiece.PieceType.PAWN, whitePawn);
-        whiteMap.put(null, EMPTY);
+        WhiteMap.put(ChessPiece.PieceType.KING, WhiteKing);
+        WhiteMap.put(ChessPiece.PieceType.QUEEN, WhiteQueen);
+        WhiteMap.put(ChessPiece.PieceType.ROOK, WhiteRook);
+        WhiteMap.put(ChessPiece.PieceType.BISHOP, WhiteBishop);
+        WhiteMap.put(ChessPiece.PieceType.KNIGHT, WhiteKnight);
+        WhiteMap.put(ChessPiece.PieceType.PAWN, WhitePawn);
+        WhiteMap.put(null, EMPTY);
 
         // Populate Black pieces map
-        blackMap.put(ChessPiece.PieceType.KING, blackKing);
-        blackMap.put(ChessPiece.PieceType.QUEEN, blackQueen);
-        blackMap.put(ChessPiece.PieceType.ROOK, blackRook);
-        blackMap.put(ChessPiece.PieceType.BISHOP, blackBishop);
-        blackMap.put(ChessPiece.PieceType.KNIGHT, blackKnight);
-        blackMap.put(ChessPiece.PieceType.PAWN, blackPawn);
-        blackMap.put(null, EMPTY);
+        BlackMap.put(ChessPiece.PieceType.KING, BlackKing);
+        BlackMap.put(ChessPiece.PieceType.QUEEN, BlackQueen);
+        BlackMap.put(ChessPiece.PieceType.ROOK, BlackRook);
+        BlackMap.put(ChessPiece.PieceType.BISHOP, BlackBishop);
+        BlackMap.put(ChessPiece.PieceType.KNIGHT, BlackKnight);
+        BlackMap.put(ChessPiece.PieceType.PAWN, BlackPawn);
+        BlackMap.put(null, EMPTY);
     }
 
-    private static final String[] headers = {"   ", " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", "   "};
-    private static final String[] headersReversed = {"   ", " h ", " g ", " f ", " e ", " d ", " c ", " b ", " a ", "   "};
+    private static final String[] Headers = {"   ", " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", "   "};
+    private static final String[] HeadersReversed = {"   ", " h ", " g ", " f ", " e ", " d ", " c ", " b ", " a ", "   "};
 
 
     public static void drawWhite(chess.ChessBoard board) {
@@ -61,12 +60,12 @@ public class ChessBoard {
 
         out.print(ERASE_SCREEN);
 
-        drawHeaders(out, headers);
+        drawHeaders(out, Headers);
         resetColor(out);
 
         drawChessBoard(out, board);
 
-        drawHeaders(out, headers);
+        drawHeaders(out, Headers);
         resetColor(out);
     }
 
@@ -75,12 +74,12 @@ public class ChessBoard {
 
         out.print(ERASE_SCREEN);
 
-        drawHeaders(out, headersReversed);
+        drawHeaders(out, HeadersReversed);
         resetColor(out);
 
         drawChessBoardReversed(out, board);
 
-        drawHeaders(out, headersReversed);
+        drawHeaders(out, HeadersReversed);
         resetColor(out);
     }
 
@@ -136,10 +135,10 @@ public class ChessBoard {
                         out.print(EMPTY);
                     } else if (current.getTeamColor() == ChessGame.TeamColor.WHITE) {
                         out.print(SET_TEXT_COLOR_WHITE);
-                        out.print(whiteMap.get(current.getPieceType()));
+                        out.print(WhiteMap.get(current.getPieceType()));
                     } else {
                         out.print(SET_TEXT_COLOR_BLACK);
-                        out.print(blackMap.get(current.getPieceType()));
+                        out.print(BlackMap.get(current.getPieceType()));
                     }
                 }
                 resetColor(out);
@@ -167,10 +166,10 @@ public class ChessBoard {
                     }
                     else if (current.getTeamColor() == ChessGame.TeamColor.WHITE) {
                         out.print(SET_TEXT_COLOR_WHITE);
-                        out.print(whiteMap.get(current.getPieceType()));
+                        out.print(WhiteMap.get(current.getPieceType()));
                     } else {
                         out.print(SET_TEXT_COLOR_BLACK);
-                        out.print(blackMap.get(current.getPieceType()));
+                        out.print(BlackMap.get(current.getPieceType()));
                     }
                 }
                 resetColor(out);

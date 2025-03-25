@@ -21,7 +21,6 @@ public class GameClient implements ClientObject {
     boolean pre;
     boolean post;
     boolean game;
-    private Map<Integer, Integer> IDs = null;
 
     public GameClient(String serverUrl, ClientCommunicator notificationHandler, ServerFacade serverFacade){
         server = serverFacade;
