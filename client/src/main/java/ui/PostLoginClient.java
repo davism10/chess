@@ -103,15 +103,18 @@ public class PostLoginClient implements ClientObject {
     public String join(String... params) throws ResponseException {
         if (params.length == 2 && (params[1].equals("WHITE") || params[1].equals("BLACK"))){
             ui.ChessBoard draw = new ui.ChessBoard();
-            if (params[1].equals("WHITE")) {
-                server.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, iDs.get(Integer.parseInt(params[0])).gameID(), authToken));
-                draw.drawWhite(iDs.get(Integer.parseInt(params[0])).game().getBoard());
+            try {
+                if (params[1].equals("WHITE")) {
+                    server.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, iDs.get(Integer.parseInt(params[0])).gameID(), authToken));
+                    draw.drawWhite(iDs.get(Integer.parseInt(params[0])).game().getBoard());
+                } else {
+                    server.joinGame(new JoinGameRequest(ChessGame.TeamColor.BLACK, iDs.get(Integer.parseInt(params[0])).gameID(), authToken));
+                    draw.drawBlack(iDs.get(Integer.parseInt(params[0])).game().getBoard());
+                }
+                return String.format("You joined the game %s.", params[0]);
+            } catch (Exception e) {
+                throw new ResponseException(400, "Game ID does not exist");
             }
-            else {
-                server.joinGame(new JoinGameRequest(ChessGame.TeamColor.BLACK, iDs.get(Integer.parseInt(params[0])).gameID(), authToken));
-                draw.drawBlack(iDs.get(Integer.parseInt(params[0])).game().getBoard());
-            }
-            return String.format("You joined the game %s.", params[0]);
         }
         throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK]");
     }
