@@ -13,42 +13,42 @@ import static ui.EscapeSequences.*;
 
 public class ChessBoard {
     private static final String EMPTY = "   ";
-    private static final String WhiteKing = WHITE_KING;
-    private static final String WhiteQueen = WHITE_QUEEN;
-    private static final String WhiteRook = WHITE_ROOK;
-    private static final String WhiteBishop = WHITE_BISHOP;
-    private static final String WhiteKnight = WHITE_KNIGHT;
-    private static final String WhitePawn = WHITE_PAWN;
+    private static final String WHITEKING = WHITE_KING;
+    private static final String WHITEQUEEN = WHITE_QUEEN;
+    private static final String WHITEROOK = WHITE_ROOK;
+    private static final String WHITEBISHOP = WHITE_BISHOP;
+    private static final String WHITEKNIGHT = WHITE_KNIGHT;
+    private static final String WHITEPAWN = WHITE_PAWN;
 
-    private static final String BlackKing = BLACK_KING;
-    private static final String BlackQueen = BLACK_QUEEN;
-    private static final String BlackRook = BLACK_ROOK;
-    private static final String BlackBishop = BLACK_BISHOP;
-    private static final String BlackKnight = BLACK_KNIGHT;
-    private static final String BlackPawn = BLACK_PAWN;
+    private static final String BLACKKING = BLACK_KING;
+    private static final String BLACKQUEEN = BLACK_QUEEN;
+    private static final String BLACKROOK = BLACK_ROOK;
+    private static final String BLACKBISHOP = BLACK_BISHOP;
+    private static final String BLACKKNIGHT = BLACK_KNIGHT;
+    private static final String BLACKPAWN = BLACK_PAWN;
 
     // Maps for White & Black pieces
-    private static final Map<ChessPiece.PieceType, String> WhiteMap = new HashMap<>();
-    private static final Map<ChessPiece.PieceType, String> BlackMap = new HashMap<>();
+    private static final Map<ChessPiece.PieceType, String> WHITEMAP = new HashMap<>();
+    private static final Map<ChessPiece.PieceType, String> BLACKMAP = new HashMap<>();
 
     static {
         // Populate White pieces map
-        WhiteMap.put(ChessPiece.PieceType.KING, WhiteKing);
-        WhiteMap.put(ChessPiece.PieceType.QUEEN, WhiteQueen);
-        WhiteMap.put(ChessPiece.PieceType.ROOK, WhiteRook);
-        WhiteMap.put(ChessPiece.PieceType.BISHOP, WhiteBishop);
-        WhiteMap.put(ChessPiece.PieceType.KNIGHT, WhiteKnight);
-        WhiteMap.put(ChessPiece.PieceType.PAWN, WhitePawn);
-        WhiteMap.put(null, EMPTY);
+        WHITEMAP.put(ChessPiece.PieceType.KING, WHITEKING);
+        WHITEMAP.put(ChessPiece.PieceType.QUEEN, WHITEQUEEN);
+        WHITEMAP.put(ChessPiece.PieceType.ROOK, WHITEROOK);
+        WHITEMAP.put(ChessPiece.PieceType.BISHOP, WHITEBISHOP);
+        WHITEMAP.put(ChessPiece.PieceType.KNIGHT, WHITEKNIGHT);
+        WHITEMAP.put(ChessPiece.PieceType.PAWN, WHITEPAWN);
+        WHITEMAP.put(null, EMPTY);
 
         // Populate Black pieces map
-        BlackMap.put(ChessPiece.PieceType.KING, BlackKing);
-        BlackMap.put(ChessPiece.PieceType.QUEEN, BlackQueen);
-        BlackMap.put(ChessPiece.PieceType.ROOK, BlackRook);
-        BlackMap.put(ChessPiece.PieceType.BISHOP, BlackBishop);
-        BlackMap.put(ChessPiece.PieceType.KNIGHT, BlackKnight);
-        BlackMap.put(ChessPiece.PieceType.PAWN, BlackPawn);
-        BlackMap.put(null, EMPTY);
+        BLACKMAP.put(ChessPiece.PieceType.KING, BLACKKING);
+        BLACKMAP.put(ChessPiece.PieceType.QUEEN, BLACKQUEEN);
+        BLACKMAP.put(ChessPiece.PieceType.ROOK, BLACKROOK);
+        BLACKMAP.put(ChessPiece.PieceType.BISHOP, BLACKBISHOP);
+        BLACKMAP.put(ChessPiece.PieceType.KNIGHT, BLACKKNIGHT);
+        BLACKMAP.put(ChessPiece.PieceType.PAWN, BLACKPAWN);
+        BLACKMAP.put(null, EMPTY);
     }
 
     private static final String[] Headers = {"   ", " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", "   "};
@@ -145,10 +145,10 @@ public class ChessBoard {
                 out.print(EMPTY);
             } else if (current.getTeamColor() == ChessGame.TeamColor.WHITE) {
                 out.print(SET_TEXT_COLOR_WHITE);
-                out.print(WhiteMap.get(current.getPieceType()));
+                out.print(WHITEMAP.get(current.getPieceType()));
             } else {
                 out.print(SET_TEXT_COLOR_BLACK);
-                out.print(BlackMap.get(current.getPieceType()));
+                out.print(BLACKMAP.get(current.getPieceType()));
             }
         }
         resetColor(out);

@@ -119,7 +119,7 @@ public class PostLoginClient implements ClientObject {
         if (params.length == 1){
             try {
                 ui.ChessBoard draw = new ui.ChessBoard();
-                draw.drawWhite(iDs.get(params[1]).game().getBoard());
+                draw.drawWhite(iDs.get(Integer.parseInt(params[0])).game().getBoard());
                 return String.format("You are observing the game %s.", params[0]);
             }
             catch(Exception e) {
