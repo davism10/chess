@@ -31,9 +31,9 @@ public class PreLoginClient implements ClientObject {
 
     public String help() {
             return """
-                    register <USERNAME> <PASSWORD> <EMAIL> - to create an account
-                    login <USERNAME> <PASSWORD> - to play chess
-                    quit - playing chess
+                    register <USERNAME> <PASSWORD> <EMAIL> - Create an account with given username, password, and email
+                    login <USERNAME> <PASSWORD> - Login using existing username and corresponding password
+                    quit - leave chess
                     help - with possible commands
                     """;
     }
@@ -42,14 +42,15 @@ public class PreLoginClient implements ClientObject {
         post = false;
         game = false;
         try {
-            var tokens = input.toLowerCase().split(" ");
-            var cmd = (tokens.length > 0) ? tokens[0] : "help";
+            var tokens = input.split(" ");
+            var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "register" -> register(params);
                 case "login" -> login(params);
                 case "quit" -> "quit";
-                default -> help();
+                case "help" -> help();
+                default -> "Unkown request, type 'help' to see valid requests";
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
@@ -57,7 +58,7 @@ public class PreLoginClient implements ClientObject {
     }
 
     public String register(String... params) throws ResponseException {
-        if (params.length >= 3) {
+        if (params.length == 3) {
             server.register(new RegisterRequest(params[0], params[1], params[2]));
             post = true;
             return String.format("You registered as %s.", params[0]);
@@ -66,7 +67,7 @@ public class PreLoginClient implements ClientObject {
     }
 
     public String login(String... params) throws ResponseException {
-        if (params.length >= 2) {
+        if (params.length == 2) {
             server.login(new LoginRequest(params[0], params[1]));
             post = true;
             return String.format("You logged in as %s.", params[0]);
