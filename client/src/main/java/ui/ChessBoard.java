@@ -118,61 +118,49 @@ public class ChessBoard {
         return !whatTurn;
     }
 
+
     private static void drawChessBoard(PrintStream out, chess.ChessBoard chessBoard) {
         boolean turn = true;
-        ChessPiece current;
+//        ChessPiece current;
         for (int boardRow = 7; boardRow > -1; --boardRow) {
             for (int squareRow = 9; squareRow > -1; --squareRow) {
-                if (squareRow == 0 || squareRow == 9) {
-                    out.print(SET_BG_COLOR_LIGHT_GREY);
-                    out.print(SET_TEXT_COLOR_LIGHT_PINK);
-                    out.print(" " + (8 - boardRow) + " ");
-                } else {
-                    setColor(out, turn);
-                    turn = switchTurn(turn);
-                    current = chessBoard.getPiece(new ChessPosition(boardRow + 1, squareRow));
-                    if (current == null) {
-                        out.print(EMPTY);
-                    } else if (current.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                        out.print(SET_TEXT_COLOR_WHITE);
-                        out.print(WhiteMap.get(current.getPieceType()));
-                    } else {
-                        out.print(SET_TEXT_COLOR_BLACK);
-                        out.print(BlackMap.get(current.getPieceType()));
-                    }
-                }
-                resetColor(out);
+                turn = isTurn(out, chessBoard, turn, boardRow, squareRow);
             }
             out.println();
             turn = switchTurn(turn);
         }
     }
 
+    private static boolean isTurn(PrintStream out, chess.ChessBoard chessBoard, boolean turn, int boardRow, int squareRow) {
+        ChessPiece current;
+        if (squareRow == 0 || squareRow == 9) {
+            out.print(SET_BG_COLOR_LIGHT_GREY);
+            out.print(SET_TEXT_COLOR_LIGHT_PINK);
+            out.print(" " + (8 - boardRow) + " ");
+        } else {
+            setColor(out, turn);
+            turn = switchTurn(turn);
+            current = chessBoard.getPiece(new ChessPosition(boardRow + 1, squareRow));
+            if (current == null) {
+                out.print(EMPTY);
+            } else if (current.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                out.print(SET_TEXT_COLOR_WHITE);
+                out.print(WhiteMap.get(current.getPieceType()));
+            } else {
+                out.print(SET_TEXT_COLOR_BLACK);
+                out.print(BlackMap.get(current.getPieceType()));
+            }
+        }
+        resetColor(out);
+        return turn;
+    }
+
     private static void drawChessBoardReversed(PrintStream out, chess.ChessBoard chessBoard) {
         boolean turn = true;
-        ChessPiece current;
+//        ChessPiece current;
         for (int boardRow = 0; boardRow < 8; ++boardRow) {
             for (int squareRow = 0; squareRow < 10; ++squareRow) {
-                if (squareRow == 0 || squareRow == 9) {
-                    out.print(SET_BG_COLOR_LIGHT_GREY);
-                    out.print(SET_TEXT_COLOR_LIGHT_PINK);
-                    out.print(" " + (8 - boardRow) + " ");
-                } else {
-                    setColor(out, turn);
-                    turn = switchTurn(turn);
-                    current = chessBoard.getPiece(new ChessPosition(boardRow + 1, squareRow));
-                    if (current == null) {
-                        out.print(EMPTY);
-                    }
-                    else if (current.getTeamColor() == ChessGame.TeamColor.WHITE) {
-                        out.print(SET_TEXT_COLOR_WHITE);
-                        out.print(WhiteMap.get(current.getPieceType()));
-                    } else {
-                        out.print(SET_TEXT_COLOR_BLACK);
-                        out.print(BlackMap.get(current.getPieceType()));
-                    }
-                }
-                resetColor(out);
+                turn = isTurn(out, chessBoard, turn, boardRow, squareRow);
             }
             out.println();
             turn = switchTurn(turn);
