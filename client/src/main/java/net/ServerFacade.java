@@ -26,7 +26,10 @@ public class ServerFacade {
 
     public RegisterResult register(RegisterRequest registerRequest) throws ResponseException {
         var path = "/user";
-        return this.makeRequest("POST", path, registerRequest, RegisterResult.class);
+        RegisterResult registerResult = this.makeRequest("POST", path, registerRequest, RegisterResult.class);
+        this.username = registerResult.username();
+        this.authToken = registerResult.authToken();
+        return registerResult;
     }
 
     public LoginResult login(LoginRequest loginRequest) throws ResponseException {
