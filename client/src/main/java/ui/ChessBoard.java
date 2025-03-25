@@ -122,8 +122,8 @@ public class ChessBoard {
     private static void drawChessBoard(PrintStream out, chess.ChessBoard chessBoard) {
         boolean turn = true;
         ChessPiece current;
-        for (int boardRow = 0; boardRow < 8; ++boardRow) {
-            for (int squareRow = 0; squareRow < 10; ++squareRow) {
+        for (int boardRow = 7; boardRow > -1; --boardRow) {
+            for (int squareRow = 9; squareRow > -1; --squareRow) {
                 if (squareRow == 0 || squareRow == 9) {
                     out.print(SET_BG_COLOR_LIGHT_GREY);
                     out.print(SET_TEXT_COLOR_LIGHT_PINK);
@@ -152,8 +152,8 @@ public class ChessBoard {
     private static void drawChessBoardReversed(PrintStream out, chess.ChessBoard chessBoard) {
         boolean turn = true;
         ChessPiece current;
-        for (int boardRow = 7; boardRow > -1; --boardRow) {
-            for (int squareRow = 9; squareRow > -1; --squareRow) {
+        for (int boardRow = 0; boardRow < 8; ++boardRow) {
+            for (int squareRow = 0; squareRow < 10; ++squareRow) {
                 if (squareRow == 0 || squareRow == 9) {
                     out.print(SET_BG_COLOR_LIGHT_GREY);
                     out.print(SET_TEXT_COLOR_LIGHT_PINK);
