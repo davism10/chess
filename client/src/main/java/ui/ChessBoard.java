@@ -159,7 +159,7 @@ public class ChessBoard {
         boolean turn = true;
 //        ChessPiece current;
         for (int boardRow = 0; boardRow < 8; ++boardRow) {
-            for (int squareRow = 9; squareRow > -1; --squareRow) {
+            for (int squareRow = 0; squareRow < 10; ++squareRow) {
                 turn = isTurn(out, chessBoard, turn, boardRow, squareRow);
             }
             out.println();
