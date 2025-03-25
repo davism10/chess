@@ -51,8 +51,8 @@ public class ChessBoard {
         BLACK_MAP.put(null, EMPTY);
     }
 
-    private static final String[] Headers = {"   ", " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", "   "};
-    private static final String[] HeadersReversed = {"   ", " h ", " g ", " f ", " e ", " d ", " c ", " b ", " a ", "   "};
+    private static final String[] HEADERS = {"   ", " a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", "   "};
+    private static final String[] HEADERS_REVERSED = {"   ", " h ", " g ", " f ", " e ", " d ", " c ", " b ", " a ", "   "};
 
 
     public static void drawWhite(chess.ChessBoard board) {
@@ -60,12 +60,12 @@ public class ChessBoard {
 
         out.print(ERASE_SCREEN);
 
-        drawHeaders(out, Headers);
+        drawHeaders(out, HEADERS);
         resetColor(out);
 
         drawChessBoard(out, board);
 
-        drawHeaders(out, Headers);
+        drawHeaders(out, HEADERS);
         resetColor(out);
     }
 
@@ -74,12 +74,12 @@ public class ChessBoard {
 
         out.print(ERASE_SCREEN);
 
-        drawHeaders(out, HeadersReversed);
+        drawHeaders(out, HEADERS_REVERSED);
         resetColor(out);
 
         drawChessBoardReversed(out, board);
 
-        drawHeaders(out, HeadersReversed);
+        drawHeaders(out, HEADERS_REVERSED);
         resetColor(out);
     }
 
