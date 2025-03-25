@@ -2,6 +2,7 @@ package ui;
 //
 //import client.websocket.NotificationHandler;
 import net.ClientCommunicator;
+import net.ServerFacade;
 //import webSocketMessages.Notification;
 
 import java.util.Scanner;
@@ -12,11 +13,14 @@ public class Repl implements ClientCommunicator {
     private final ClientObject preClient;
     private final ClientObject postClient;
     private final ClientObject gameClient;
+    private String authToken = null;
+    ServerFacade serverFacade;
 
     public Repl(String serverUrl) {
-        preClient = new PreLoginClient(serverUrl, this);
-        postClient = new PostLoginClient(serverUrl, this);
-        gameClient = new GameClient(serverUrl, this);
+        serverFacade = new ServerFacade(serverUrl);
+        preClient = new PreLoginClient(serverUrl, this, serverFacade);
+        postClient = new PostLoginClient(serverUrl, this, serverFacade);
+        gameClient = new GameClient(serverUrl, this, serverFacade);
 
         client = preClient;
     }
@@ -36,7 +40,9 @@ public class Repl implements ClientCommunicator {
                 System.out.print("\u001B[38;2;255;102;204m" + result);
 
                 if (client.getPost()){
+                    this.authToken = serverFacade.getAuth();
                     switchClient(postClient);
+                    client.connectAuthToken(authToken);
                 } else if (client.getPre()) {
                     switchClient(preClient);
                 } else if (client.getGame()) {
@@ -55,10 +61,10 @@ public class Repl implements ClientCommunicator {
         client = newClient;
     }
 
-    public void notify(Notification notification) {
-        System.out.println(RED + notification.message());
-        printPrompt();
-    }
+//    public void notify(Notification notification) {
+//        System.out.println(RED + notification.message());
+//        printPrompt();
+//    }
 
     private void printPrompt() {
         System.out.print("\n" + RESET + ">>> " + "\u001B[38;2;34;139;34m");

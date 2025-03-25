@@ -11,45 +11,57 @@ import java.net.*;
 public class ServerFacade {
 
     private final String serverUrl;
+    private String username;
+    private String authToken;
 
     public ServerFacade(String url) {
         serverUrl = url;
+        this.username = null;
+        this.authToken = null;
     }
 
+    public String getAuth(){
+        return authToken;
+    }
 
     public RegisterResult register(RegisterRequest registerRequest) throws ResponseException {
-        var path = "/info/user";
+        var path = "/user";
         return this.makeRequest("POST", path, registerRequest, RegisterResult.class);
     }
 
     public LoginResult login(LoginRequest loginRequest) throws ResponseException {
-        var path = String.format("/info/user/%s", loginRequest.username());
-        return this.makeRequest("POST", path, loginRequest, LoginResult.class);
+        var path = "/session";
+//        var path = String.format("/session/%s", loginRequest.username());
+        this.username = loginRequest.username();
+        LoginResult loginResult = this.makeRequest("POST", path, loginRequest, LoginResult.class);
+        this.authToken = loginResult.authToken();
+        return loginResult;
     }
 
-    public void logout(LogoutRequest logoutRequest) throws ResponseException {
-//        var path = String.format("/user/%s", logoutRequest.username());
-        var path = "/info/user";
+    public void logout() throws ResponseException {
+        LogoutRequest logoutRequest = new LogoutRequest(this.authToken);
+        var path = "/session";
         this.makeRequest("DELETE", path, logoutRequest, null);
+        this.authToken = null;
     }
 
     public ListGamesResult listGames(ListGamesRequest listGamesRequest) throws ResponseException {
-        var path = "/info/game";
-        return this.makeRequest("GET", path, listGamesRequest, ListGamesResult.class);
+        var path = "/game";
+        return this.makeRequest("GET", path,null, ListGamesResult.class);
     }
 
     public CreateGameResult createGame(CreateGameRequest createGameRequest) throws ResponseException {
-        var path = "/info/game";
+        var path = "/game";
         return this.makeRequest("POST", path, createGameRequest, CreateGameResult.class);
     }
 
     public void joinGame(JoinGameRequest joinGameRequest) throws ResponseException {
-        var path = "/info/game";
+        var path = "/game";
         this.makeRequest("PUT", path, joinGameRequest, null);
     }
 
     public void clear() throws ResponseException {
-        var path = "/info";
+        var path = "/db";
         this.makeRequest("DELETE", path, null, null);
     }
 
@@ -57,6 +69,9 @@ public class ServerFacade {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            if (authToken != null) {
+                http.setRequestProperty("Authorization", authToken);
+            }
             http.setRequestMethod(method);
             http.setDoOutput(true);
 

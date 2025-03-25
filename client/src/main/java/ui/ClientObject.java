@@ -6,4 +6,5 @@ public interface ClientObject {
     public boolean getPost();
     public boolean getPre();
     public boolean getGame();
+    public void connectAuthToken(String authToken);
 }

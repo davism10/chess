@@ -1,27 +1,32 @@
 package ui;
 import exception.ResponseException;
+import model.LoginRequest;
+import model.RegisterRequest;
 import net.ClientCommunicator;
 import net.ServerFacade;
 
 import java.util.Arrays;
 
 public class PreLoginClient implements ClientObject {
-    private String visitorName = null;
     private final ServerFacade server;
     private final String serverUrl;
+    private String authToken = null;
     private final ClientCommunicator notificationHandler;
-//    private WebSocketFacade ws;
     boolean pre;
     boolean post;
     boolean game;
 
-    public PreLoginClient(String serverUrl, ClientCommunicator notificationHandler){
-        server = new ServerFacade(serverUrl);
+    public PreLoginClient(String serverUrl, ClientCommunicator notificationHandler, ServerFacade serverFacade){
+        server = serverFacade;
         this.serverUrl = serverUrl;
         this.notificationHandler = notificationHandler;
         this.pre = false;
         this.post = false;
         this.game = false;
+    }
+
+    public void connectAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 
     public String help() {
@@ -33,6 +38,9 @@ public class PreLoginClient implements ClientObject {
                     """;
     }
     public String eval(String input) {
+        pre = false;
+        post = false;
+        game = false;
         try {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
@@ -50,15 +58,20 @@ public class PreLoginClient implements ClientObject {
 
     public String register(String... params) throws ResponseException {
         if (params.length >= 3) {
-            visitorName = String.join("-", params);
-            ws = new WebSocketFacade(serverUrl, notificationHandler);
-            ws.enterPetShop(visitorName);
-            return String.format("You registered as %s.", visitorName);
+            server.register(new RegisterRequest(params[0], params[1], params[2]));
+            post = true;
+            return String.format("You registered as %s.", params[0]);
         }
         throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
     }
 
     public String login(String... params) throws ResponseException {
+        if (params.length >= 2) {
+            server.login(new LoginRequest(params[0], params[1]));
+            post = true;
+            return String.format("You logged in as %s.", params[0]);
+        }
+        throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD>");
 
     }
 
