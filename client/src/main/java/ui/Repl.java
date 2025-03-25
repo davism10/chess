@@ -26,6 +26,7 @@ public class Repl implements ClientCommunicator {
     }
 
     public void run() {
+        System.out.print("\u001B[38;2;255;102;204m");
         System.out.println("\uD83D\uDC51 Welcome to 240 chess. Type Help to get started. \uD83D\uDC51");
         System.out.print(client.help());
 
@@ -55,6 +56,7 @@ public class Repl implements ClientCommunicator {
             }
         }
         System.out.println();
+        System.out.println("Thanks for playing \u2661");
     }
 
     public void switchClient(ClientObject newClient) {
