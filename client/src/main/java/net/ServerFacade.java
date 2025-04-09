@@ -1,5 +1,6 @@
 package net;
 
+import chess.ChessBoard;
 import com.google.gson.Gson;
 import exception.ErrorResponse;
 import exception.ResponseException;
@@ -13,11 +14,13 @@ public class ServerFacade {
     private final String serverUrl;
     private String username;
     private String authToken;
+    private ChessBoard myBoard;
 
     public ServerFacade(String url) {
         serverUrl = url;
         this.username = null;
         this.authToken = null;
+        this.myBoard = null;
     }
 
     public String getAuth(){

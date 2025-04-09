@@ -7,4 +7,6 @@ public interface ClientObject {
     public boolean getPre();
     public boolean getGame();
     public void connectAuthToken(String authToken);
+    public void setObserve(Boolean observe);
+    public boolean isObserved();
 }

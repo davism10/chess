@@ -10,6 +10,7 @@ public class Repl implements ClientCommunicator {
     private final ClientObject postClient;
     private final ClientObject gameClient;
     private String authToken = null;
+    private Boolean observed;
     ServerFacade serverFacade;
 
     public Repl(String serverUrl) {
@@ -43,7 +44,9 @@ public class Repl implements ClientCommunicator {
                 } else if (client.getPre()) {
                     switchClient(preClient);
                 } else if (client.getGame()) {
+                    observed = client.isObserved();
                     switchClient(gameClient);
+                    client.setObserve(observed);
                 }
 
             } catch (Throwable e) {

@@ -25,6 +25,13 @@ public class PreLoginClient implements ClientObject {
         this.game = false;
     }
 
+    public void setObserve(Boolean observe) {
+    }
+
+    public boolean isObserved(){
+        return false;
+    }
+
     public void connectAuthToken(String authToken) {
         this.authToken = authToken;
     }

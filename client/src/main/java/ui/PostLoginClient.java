@@ -21,6 +21,7 @@ public class PostLoginClient implements ClientObject {
     boolean pre;
     boolean post;
     boolean game;
+    boolean observe = false;
     private Map<Integer, GameData> iDs = null;
 
     public PostLoginClient(String serverUrl, ClientCommunicator notificationHandler, ServerFacade serverFacade){
@@ -32,9 +33,17 @@ public class PostLoginClient implements ClientObject {
         this.game = false;
     }
 
+    public void setObserve(Boolean observe) {
+    }
+
+    public boolean isObserved(){
+        return observe;
+    }
+
     public void connectAuthToken(String authToken) {
         this.authToken = authToken;
     }
+
 
     public String help() {
         return """
@@ -118,11 +127,13 @@ public class PostLoginClient implements ClientObject {
         }
         throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK]");
     }
+
     public String observe(String... params) throws ResponseException {
         if (params.length == 1){
             try {
                 ui.ChessBoard draw = new ui.ChessBoard();
                 draw.drawWhite(iDs.get(Integer.parseInt(params[0])).game().getBoard());
+                this.observe = true;
                 return String.format("You are observing the game %s.", params[0]);
             }
             catch(Exception e) {
