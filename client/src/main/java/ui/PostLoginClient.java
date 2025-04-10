@@ -22,7 +22,9 @@ public class PostLoginClient implements ClientObject {
     boolean post;
     boolean game;
     boolean observe = false;
+    GameData gameData = null;
     private Map<Integer, GameData> iDs = null;
+    ChessGame.TeamColor color = null;
 
     public PostLoginClient(String serverUrl, ClientCommunicator notificationHandler, ServerFacade serverFacade){
         server = serverFacade;
@@ -42,6 +44,22 @@ public class PostLoginClient implements ClientObject {
 
     public void connectAuthToken(String authToken) {
         this.authToken = authToken;
+    }
+
+    public GameData getGameInfo(){
+        return this.gameData;
+    }
+
+    public void attatchGameInfo(GameData gameData){
+        this.gameData = gameData;
+    }
+
+    public ChessGame.TeamColor getColor(){
+        return this.color;
+    }
+
+    public void attatchColor(ChessGame.TeamColor color){
+        this.color = color;
     }
 
 
@@ -114,12 +132,17 @@ public class PostLoginClient implements ClientObject {
             ui.ChessBoard draw = new ui.ChessBoard();
             try {
                 if (params[1].equals("WHITE")) {
+                    this.color = ChessGame.TeamColor.WHITE;
                     server.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, iDs.get(Integer.parseInt(params[0])).gameID(), authToken));
-                    draw.drawWhite(iDs.get(Integer.parseInt(params[0])).game().getBoard());
+                    draw.drawWhite(iDs.get(Integer.parseInt(params[0])).game().getBoard(), null);
                 } else {
+                    this.color = ChessGame.TeamColor.BLACK;
                     server.joinGame(new JoinGameRequest(ChessGame.TeamColor.BLACK, iDs.get(Integer.parseInt(params[0])).gameID(), authToken));
-                    draw.drawBlack(iDs.get(Integer.parseInt(params[0])).game().getBoard());
+                    draw.drawBlack(iDs.get(Integer.parseInt(params[0])).game().getBoard(), null);
                 }
+                this.gameData = iDs.get(Integer.parseInt(params[0]));
+                this.game = true;
+
                 return String.format("You joined the game %s.", params[0]);
             } catch (Exception e) {
                 throw new ResponseException(400, "Game ID does not exist");
@@ -132,8 +155,11 @@ public class PostLoginClient implements ClientObject {
         if (params.length == 1){
             try {
                 ui.ChessBoard draw = new ui.ChessBoard();
-                draw.drawWhite(iDs.get(Integer.parseInt(params[0])).game().getBoard());
+                draw.drawWhite(iDs.get(Integer.parseInt(params[0])).game().getBoard(), null);
                 this.observe = true;
+                this.gameData = iDs.get(Integer.parseInt(params[0]));
+                this.game = true;
+                this.color = ChessGame.TeamColor.WHITE;
                 return String.format("You are observing the game %s.", params[0]);
             }
             catch(Exception e) {

@@ -1,4 +1,6 @@
 package ui;
+import chess.ChessGame;
+import model.GameData;
 import net.ClientCommunicator;
 import net.ServerFacade;
 import java.util.Scanner;
@@ -12,6 +14,8 @@ public class Repl implements ClientCommunicator {
     private String authToken = null;
     private Boolean observed;
     ServerFacade serverFacade;
+    private ChessGame.TeamColor color;
+    private GameData gameData;
 
     public Repl(String serverUrl) {
         serverFacade = new ServerFacade(serverUrl);
@@ -36,7 +40,6 @@ public class Repl implements ClientCommunicator {
             try {
                 result = client.eval(line);
                 System.out.print("\u001B[38;2;255;102;204m" + result);
-
                 if (client.getPost()){
                     this.authToken = serverFacade.getAuth();
                     switchClient(postClient);
@@ -45,8 +48,14 @@ public class Repl implements ClientCommunicator {
                     switchClient(preClient);
                 } else if (client.getGame()) {
                     observed = client.isObserved();
+                    color = client.getColor();
+                    gameData = client.getGameInfo();
+
                     switchClient(gameClient);
+
                     client.setObserve(observed);
+                    client.attatchGameInfo(gameData);
+                    client.attatchColor(color);
                 }
 
             } catch (Throwable e) {

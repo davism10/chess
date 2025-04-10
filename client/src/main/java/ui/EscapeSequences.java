@@ -51,7 +51,8 @@ public class EscapeSequences {
 
     public static final String SET_BG_COLOR_PINK = SET_BG_COLOR + "218m";       // Soft Pink
     public static final String SET_BG_COLOR_HOT_PINK = SET_BG_COLOR + "205m";   // Vibrant Hot Pink
-    public static final String SET_BG_COLOR_ROSE = SET_BG_COLOR + "211m";       // Rose Pink
+    public static final String SET_BG_COLOR_ROSE = SET_BG_COLOR + "211m";
+    public static final String SET_BG_COLOR_LAVENDER = SET_BG_COLOR + "183m"; // pastel purple
     public static final String SET_BG_COLOR_LIGHT_PINK = SET_BG_COLOR + "217m"; // Light Pink
     public static final String SET_BG_COLOR_DEEP_PINK = SET_BG_COLOR + "198m";  // Deep Pink
     public static final String SET_BG_COLOR_SALMON = SET_BG_COLOR + "209m";

@@ -75,7 +75,7 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+    public static Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         PieceMovesCalculator moves = switch(getPieceType()){
             case QUEEN -> new QueenMovesCalculator();
             case BISHOP -> new BishopMovesCalculator();

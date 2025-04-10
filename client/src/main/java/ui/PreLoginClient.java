@@ -1,5 +1,7 @@
 package ui;
+import chess.ChessGame;
 import exception.ResponseException;
+import model.GameData;
 import model.LoginRequest;
 import model.RegisterRequest;
 import net.ClientCommunicator;
@@ -15,6 +17,8 @@ public class PreLoginClient implements ClientObject {
     boolean pre;
     boolean post;
     boolean game;
+    ChessGame.TeamColor color = null;
+    GameData gameData = null;
 
     public PreLoginClient(String serverUrl, ClientCommunicator notificationHandler, ServerFacade serverFacade){
         server = serverFacade;
@@ -32,8 +36,24 @@ public class PreLoginClient implements ClientObject {
         return false;
     }
 
+    public GameData getGameInfo(){
+        return this.gameData;
+    }
+
+    public void attatchGameInfo(GameData gameData){
+        this.gameData = gameData;
+    }
+
     public void connectAuthToken(String authToken) {
         this.authToken = authToken;
+    }
+
+    public ChessGame.TeamColor getColor(){
+        return this.color;
+    }
+
+    public void attatchColor(ChessGame.TeamColor color){
+        this.color = color;
     }
 
     public String help() {
