@@ -18,6 +18,16 @@ public class GameService {
         this.authMemory = authMemory;
     }
 
+    public GameData getGame(int gameID) throws ResponseException{
+        try {
+            return gameMemory.getGame(gameID);
+        }
+        catch (Exception e){
+            throw new ResponseException(400, "Error: bad request, invalid gameID");
+        }
+    }
+
+
     public ListGamesResult listGames(ListGamesRequest listGamesRequest) throws ResponseException {
         try {
             AuthData authData = authMemory.getAuth(listGamesRequest.authToken());

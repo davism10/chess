@@ -19,6 +19,15 @@ public class UserService {
         this.authMemory = authMemory;
     }
 
+    public String getUser(String authToken) throws ResponseException{
+        try {
+            return authMemory.getAuth(authToken).username();
+        }
+        catch (Exception e){
+            throw new ResponseException(401, "Error: unauthorized");
+        }
+    }
+
     private static String generateToken() {
         return UUID.randomUUID().toString();
     }
