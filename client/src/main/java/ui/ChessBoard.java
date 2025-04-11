@@ -145,13 +145,7 @@ public class ChessBoard {
     private static void drawChessBoard(PrintStream out, chess.ChessBoard chessBoard, Collection<ChessMove> moves) {
         boolean turn = true;
 //        ChessPiece current;
-        for (int boardRow = 7; boardRow > -1; --boardRow) {
-            for (int squareRow = 0; squareRow < 10; ++squareRow) {
-                turn = isTurn(out, chessBoard, turn, boardRow, squareRow, moves);
-            }
-            out.println();
-            turn = switchTurn(turn);
-        }
+        loopBoard(out, chessBoard, moves, turn);
     }
 
     private static boolean isTurn(PrintStream out, chess.ChessBoard chessBoard, boolean turn, int boardRow, int squareRow, Collection<ChessMove> moves) {
@@ -191,6 +185,10 @@ public class ChessBoard {
     private static void drawChessBoardReversed(PrintStream out, chess.ChessBoard chessBoard, Collection<ChessMove> moves) {
         boolean turn = true;
 //        ChessPiece current;
+        loopBoard(out, chessBoard, moves, turn);
+    }
+
+    private static void loopBoard(PrintStream out, chess.ChessBoard chessBoard, Collection<ChessMove> moves, boolean turn) {
         for (int boardRow = 0; boardRow < 8; ++boardRow) {
             for (int squareRow = 0; squareRow < 10; ++squareRow) {
                 turn = isTurn(out, chessBoard, turn, boardRow, squareRow, moves);

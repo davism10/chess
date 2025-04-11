@@ -63,16 +63,19 @@ public class GameClient implements ClientObject {
             return """
                     redraw - move the game board down, so it is easily viewed
                     leave - when you are done watching the game
-                    highlight <SQUARE> - will highlight valid moves for the square that you have been given (square must be give in the form <number><letter>)
+                    highlight <SQUARE> - will highlight valid moves for the square that you have been given
+                     (square must be give in the form <number><letter>)
                     help - with possible commands
                     """;
         }
         return """
                     redraw - move the game board down, so it is easily viewed
                     leave - when you are done playing the game
-                    move <START SQUARE> <END SQUARE> - when you are ready to make a valid move (square must be give in the form <number><letter>)
+                    move <START SQUARE> <END SQUARE> - when you are ready to make a valid move 
+                    (square must be give in the form <number><letter>)
                     resign - admitting defeat ~ will end the game
-                    highlight <SQUARE> - will highlight valid moves for the square that you have been given (square must be give in the form <number><letter>)
+                    highlight <SQUARE> - will highlight valid moves for the square that you have been given 
+                    (square must be give in the form <number><letter>)
                     help - with possible commands
                     """;
 
@@ -159,7 +162,8 @@ public class GameClient implements ClientObject {
                 throw new ResponseException(500, "Invalid move");
             }
             ChessPiece.PieceType promotion = null;
-            if (myPiece.getPieceType() == ChessPiece.PieceType.PAWN && (row == 1 || row == 8)){
+            if (myPiece.getPieceType() == ChessPiece.PieceType.PAWN && (row == 1
+                    || row == 8)){
                 promotion = getPromotionPieceType();
             }
             ChessMove chessMove = new ChessMove(start, end, promotion);
