@@ -93,6 +93,7 @@ public class WebSocketHandler {
         return teamColor;
     }
 
+
     private ChessGame.TeamColor getTeamColorType(Integer gameId, String visitorName) throws ResponseException {
         ChessGame.TeamColor teamColor;
         if (gameService.getGame(gameId).whiteUsername().equals(visitorName)){
@@ -127,13 +128,17 @@ public class WebSocketHandler {
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             var gameNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameService.getGame(gameId));
 
+            connections.broadcastAll(gameNotification, gameId);
+            connections.broadcast(visitorName, notification, gameId);
+
             boolean checkmate = gameService.getGame(gameId).game().isInCheckmate(ChessGame.notColor(getTeamColorType(gameId, visitorName)));
             boolean check = gameService.getGame(gameId).game().isInCheck(ChessGame.notColor(getTeamColorType(gameId, visitorName)));
             boolean stalemate = gameService.getGame(gameId).game().isInStalemate(ChessGame.notColor(getTeamColorType(gameId, visitorName)));
 
             if (checkmate) {
-                var mateMessage = String.format("%s is in checkmate by %s", otherTeam(getTeamColor(gameId, visitorName)));
+                var mateMessage = String.format("%s is in checkmate by %s", otherTeam(getTeamColor(gameId, visitorName)), visitorName);
                 var mateNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, mateMessage);
+                connections.resigned(gameId);
                 connections.broadcastAll(mateNotification, gameId);
             }
             else if (check) {
@@ -146,9 +151,6 @@ public class WebSocketHandler {
                 var staleNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, staleMessage);
                 connections.broadcastAll(staleNotification, gameId);
             }
-
-            connections.broadcastAll(gameNotification, gameId);
-            connections.broadcast(visitorName, notification, gameId);
 
         } catch (Exception e) {
             throw new ResponseException(500,e.getMessage());
