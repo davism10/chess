@@ -148,7 +148,8 @@ public class ChessBoard {
         loopBoard(out, chessBoard, moves, turn);
     }
 
-    private static boolean isTurn(PrintStream out, chess.ChessBoard chessBoard, boolean turn, int boardRow, int squareRow, Collection<ChessMove> moves) {
+    private static boolean isTurn(PrintStream out, chess.ChessBoard chessBoard, boolean turn, int boardRow,
+                                  int squareRow, Collection<ChessMove> moves) {
         ChessPiece current;
         if (squareRow == 0 || squareRow == 9) {
             out.print(SET_BG_COLOR_LIGHT_GREY);
