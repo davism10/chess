@@ -4,6 +4,8 @@ import exception.ResponseException;
 import model.*;
 import net.ClientCommunicator;
 import net.ServerFacade;
+import websocket.NotificationHandler;
+import websocket.WebSocketFacade;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -17,7 +19,8 @@ public class PostLoginClient implements ClientObject {
     private String authToken = null;
     private final ServerFacade server;
     private final String serverUrl;
-    private final ClientCommunicator notificationHandler;
+    private final NotificationHandler notificationHandler;
+    private WebSocketFacade ws;
     boolean pre;
     boolean post;
     boolean game;
@@ -26,7 +29,7 @@ public class PostLoginClient implements ClientObject {
     private Map<Integer, GameData> iDs = null;
     ChessGame.TeamColor color = null;
 
-    public PostLoginClient(String serverUrl, ClientCommunicator notificationHandler, ServerFacade serverFacade){
+    public PostLoginClient(String serverUrl, NotificationHandler notificationHandler, ServerFacade serverFacade){
         server = serverFacade;
         this.serverUrl = serverUrl;
         this.notificationHandler = notificationHandler;
@@ -130,17 +133,18 @@ public class PostLoginClient implements ClientObject {
     public String join(String... params) throws ResponseException {
         if (params.length == 2 && (params[1].equals("WHITE") || params[1].equals("BLACK"))){
             ui.ChessBoard draw = new ui.ChessBoard();
+            ws = new WebSocketFacade(serverUrl, notificationHandler);
             try {
+                this.gameData = iDs.get(Integer.parseInt(params[0]));
                 if (params[1].equals("WHITE")) {
                     this.color = ChessGame.TeamColor.WHITE;
                     server.joinGame(new JoinGameRequest(ChessGame.TeamColor.WHITE, iDs.get(Integer.parseInt(params[0])).gameID(), authToken));
-                    draw.drawWhite(iDs.get(Integer.parseInt(params[0])).game().getBoard(), null);
+                    ws.connect(authToken, gameData.gameID());
                 } else {
                     this.color = ChessGame.TeamColor.BLACK;
                     server.joinGame(new JoinGameRequest(ChessGame.TeamColor.BLACK, iDs.get(Integer.parseInt(params[0])).gameID(), authToken));
-                    draw.drawBlack(iDs.get(Integer.parseInt(params[0])).game().getBoard(), null);
+                    ws.connect(authToken, gameData.gameID());
                 }
-                this.gameData = iDs.get(Integer.parseInt(params[0]));
                 this.game = true;
 
                 return String.format("You joined the game %s.", params[0]);
@@ -154,12 +158,13 @@ public class PostLoginClient implements ClientObject {
     public String observe(String... params) throws ResponseException {
         if (params.length == 1){
             try {
+                ws = new WebSocketFacade(serverUrl, notificationHandler);
                 ui.ChessBoard draw = new ui.ChessBoard();
-                draw.drawWhite(iDs.get(Integer.parseInt(params[0])).game().getBoard(), null);
                 this.observe = true;
                 this.gameData = iDs.get(Integer.parseInt(params[0]));
                 this.game = true;
                 this.color = ChessGame.TeamColor.WHITE;
+                ws.connect(authToken, gameData.gameID());
                 return String.format("You are observing the game %s.", params[0]);
             }
             catch(Exception e) {

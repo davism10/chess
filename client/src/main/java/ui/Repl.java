@@ -1,12 +1,19 @@
 package ui;
 import chess.ChessGame;
 import model.GameData;
-import net.ClientCommunicator;
 import net.ServerFacade;
+import websocket.NotificationHandler;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
+
 import java.util.Scanner;
+
+import static ui.EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
+import static ui.EscapeSequences.SET_TEXT_COLOR_SOFT_RED;
 //import static com.sun.org.apache.xalan.internal.xsltc.compiler.Constants.RESET;
 
-public class Repl implements ClientCommunicator {
+public class Repl implements NotificationHandler {
     private ClientObject client;
     private final ClientObject preClient;
     private final ClientObject postClient;
@@ -47,12 +54,14 @@ public class Repl implements ClientCommunicator {
                 } else if (client.getPre()) {
                     switchClient(preClient);
                 } else if (client.getGame()) {
+                    this.authToken = serverFacade.getAuth();
                     observed = client.isObserved();
                     color = client.getColor();
                     gameData = client.getGameInfo();
 
                     switchClient(gameClient);
 
+                    client.connectAuthToken(authToken);
                     client.setObserve(observed);
                     client.attatchGameInfo(gameData);
                     client.attatchColor(color);
@@ -69,6 +78,29 @@ public class Repl implements ClientCommunicator {
 
     public void switchClient(ClientObject newClient) {
         client = newClient;
+    }
+
+    public void notifyError(ErrorMessage notification) {
+        System.out.println(SET_TEXT_COLOR_SOFT_RED + notification.getErrorMessage());
+        printPrompt();
+    }
+
+    public void notify(NotificationMessage notification) {
+        System.out.println(SET_TEXT_COLOR_LIGHT_GREY + notification.getMessage());
+        printPrompt();
+    }
+
+    public void notifyLoadGame(LoadGameMessage notification) {
+        ui.ChessBoard draw = new ui.ChessBoard();
+        if (client.getColor() == ChessGame.TeamColor.BLACK){
+            draw.drawBlack(notification.getGame().game().getBoard(), null);
+            client.attatchGameInfo(notification.getGame());
+        }
+        else {
+            draw.drawWhite(notification.getGame().game().getBoard(), null);
+            client.attatchGameInfo(notification.getGame());
+        }
+        printPrompt();
     }
 
 

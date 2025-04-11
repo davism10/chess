@@ -6,6 +6,7 @@ import model.LoginRequest;
 import model.RegisterRequest;
 import net.ClientCommunicator;
 import net.ServerFacade;
+import websocket.NotificationHandler;
 
 import java.util.Arrays;
 
@@ -13,14 +14,14 @@ public class PreLoginClient implements ClientObject {
     private final ServerFacade server;
     private final String serverUrl;
     private String authToken = null;
-    private final ClientCommunicator notificationHandler;
+    private final NotificationHandler notificationHandler;
     boolean pre;
     boolean post;
     boolean game;
     ChessGame.TeamColor color = null;
     GameData gameData = null;
 
-    public PreLoginClient(String serverUrl, ClientCommunicator notificationHandler, ServerFacade serverFacade){
+    public PreLoginClient(String serverUrl, NotificationHandler notificationHandler, ServerFacade serverFacade){
         server = serverFacade;
         this.serverUrl = serverUrl;
         this.notificationHandler = notificationHandler;
