@@ -40,10 +40,10 @@ public class WebSocketHandler {
                 case CONNECT -> connect(action.getAuthToken(), action.getGameID(), session);
                 case MAKE_MOVE -> {
                     MakeMoveCommand newAction = new Gson().fromJson(message, MakeMoveCommand.class);
-                    makeMove(newAction.getAuthToken(), newAction.getGameID(), newAction.getMove());
+                    makeMove(newAction.getAuthToken(), newAction.getGameID(), newAction.getMove(), session);
                 }
-                case LEAVE -> leave(action.getAuthToken());
-                case RESIGN -> resign(action.getAuthToken(), action.getGameID());
+                case LEAVE -> leave(action.getAuthToken(), action.getGameID(), session);
+                case RESIGN -> resign(action.getAuthToken(), action.getGameID(), session);
             }
         }
         catch (Exception e) {
@@ -57,13 +57,13 @@ public class WebSocketHandler {
     private void connect(String authToken, Integer gameId, Session session) throws ResponseException {
         try {
             String visitorName = userService.getUser(authToken);
-            connections.add(visitorName, session);
+            connections.add(visitorName, gameId, session);
             String teamColor = getTeamColor(gameId, visitorName);
 
             var message = String.format("%s joined the game as %s", visitorName, teamColor);
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             var gameNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameService.getGame(gameId));
-            connections.broadcast(visitorName, notification);
+            connections.broadcast(visitorName, notification, session);
             session.getRemote().sendString(new Gson().toJson(gameNotification));
 
         }
@@ -100,8 +100,11 @@ public class WebSocketHandler {
         return teamColor;
     }
 
-    private void makeMove(String authToken, int gameId, ChessMove move) throws ResponseException {
+    private void makeMove(String authToken, int gameId, ChessMove move, Session session) throws ResponseException {
         String visitorName = userService.getUser(authToken);
+        if (connections.isResign(gameId)){
+            throw new ResponseException(500, "game is over");
+        }
         if (getTeamColorType(gameId, visitorName) != gameService.getGame(gameId).game().getTeamTurn()){
             throw new ResponseException(500, "Not your turn!");
         }
@@ -116,57 +119,64 @@ public class WebSocketHandler {
             gameService.updategame(gameId, newGameData);
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             var gameNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameService.getGame(gameId));
-            connections.broadcastAll(gameNotification);
-            connections.broadcast(visitorName, notification);
+            connections.broadcastAll(gameNotification, session);
+            connections.broadcast(visitorName, notification, session);
 
         } catch (Exception e) {
             throw new ResponseException(500,e.getMessage());
         }
     }
 
-    private void leave(String authToken) throws ResponseException {
+    private void leave(String authToken, int gameId, Session session) throws ResponseException {
         try {
             String visitorName = userService.getUser(authToken);
             connections.remove(visitorName);
             var message = String.format("%s left the game", visitorName);
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-            connections.broadcast(visitorName, notification);
+            connections.broadcast(visitorName, notification, session);
+            GameData newGame;
+            GameData oldGame = gameService.getGame(gameId);
+            if (getTeamColor(gameId, visitorName).equals("white")){
+                newGame = new GameData(gameId, null, oldGame.blackUsername(), oldGame.gameName(), oldGame.game());
+                gameService.updategame(gameId, newGame);
+                }
+            else if (getTeamColor(gameId, visitorName).equals("black")){
+                newGame = new GameData(gameId, oldGame.whiteUsername(), null, oldGame.gameName(), oldGame.game());
+                gameService.updategame(gameId, newGame);
+            }
         }
         catch (Exception e) {
             throw new ResponseException(500, e.getMessage());
         }
     }
 
-    private void resign(String authToken, int gameId) throws ResponseException {
+    private void resign(String authToken, int gameId, Session session) throws ResponseException {
+        if (connections.isResign(gameId)){
+            throw new ResponseException(500, "game is over");
+        }
         try {
             String visitorName = userService.getUser(authToken);
             GameData oldGame = gameService.getGame(gameId);
-            GameData newGame;
-            ChessGame newGameInfo;
             String otherUser;
 
             String teamColor;
             if (gameService.getGame(gameId).whiteUsername().equals(visitorName)) {
                 teamColor = "white";
-                newGameInfo = oldGame.game();
-                newGameInfo.setTeamTurn(null);
                 otherUser = oldGame.blackUsername();
-                newGame = new GameData(gameId, null, oldGame.blackUsername(), oldGame.gameName(), newGameInfo);
 
             } else if (gameService.getGame(gameId).blackUsername().equals(visitorName)) {
                 teamColor = "black";
-                newGameInfo = oldGame.game();
-                newGameInfo.setTeamTurn(null);
                 otherUser = oldGame.whiteUsername();
-                newGame = new GameData(gameId, oldGame.whiteUsername(), null, oldGame.gameName(), newGameInfo);
             } else {
                 teamColor = "an observer";
                 throw new ResponseException(500, "Error: an observer cannot resign");
             }
 
             var message = String.format("%s(%s) resigned. %s has won the game.", visitorName, teamColor, otherUser);
+            connections.resigned(gameId);
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-            connections.broadcastAll(notification);
+
+            connections.broadcastAll(notification, session);
         } catch (IOException e) {
             throw new ResponseException(500, e.getMessage());
         }
