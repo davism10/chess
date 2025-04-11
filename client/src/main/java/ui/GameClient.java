@@ -1,24 +1,19 @@
 package ui;
 import chess.*;
-import chess.ChessBoard;
 import exception.ResponseException;
 import model.*;
-import net.ClientCommunicator;
 import net.ServerFacade;
-
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import websocket.NotificationHandler;
+import websocket.WebSocketFacade;
+import java.util.*;
 
 public class GameClient implements ClientObject {
     private String gameID = null;
     private String authToken = null;
     private final ServerFacade server;
     private final String serverUrl;
-    private final ClientCommunicator notificationHandler;
+    private final NotificationHandler notificationHandler;
+    private WebSocketFacade ws;
     boolean pre;
     boolean post;
     boolean game;
@@ -26,7 +21,7 @@ public class GameClient implements ClientObject {
     ChessGame.TeamColor color = null;
     public GameData gameData = null;
 
-    public GameClient(String serverUrl, ClientCommunicator notificationHandler, ServerFacade serverFacade){
+    public GameClient(String serverUrl, NotificationHandler notificationHandler, ServerFacade serverFacade){
         server = serverFacade;
         this.serverUrl = serverUrl;
         this.notificationHandler = notificationHandler;
@@ -64,20 +59,30 @@ public class GameClient implements ClientObject {
     }
 
     public String help(){
+        if (observe) {
+            return """
+                    redraw - move the game board down, so it is easily viewed
+                    leave - when you are done watching the game
+                    highlight <SQUARE> - will highlight valid moves for the square that you have been given (square must be give in the form <number><letter>)
+                    help - with possible commands
+                    """;
+        }
         return """
-                redraw - move the game board down, so it is easily viewed
-                leave - when you are done playing the game
-                move <START SQUARE> [END SQUARE] - when you are ready to make a valid move (square must be give in the form <number><letter>)
-                resign <ID> - admitting defeat ~ will end the game
-                highlight <SQUARE> - will highlight valid moves for the square that you have been given (square must be give in the form <number><letter>)
-                help - with possible commands
-                """;
+                    redraw - move the game board down, so it is easily viewed
+                    leave - when you are done playing the game
+                    move <START SQUARE> <END SQUARE> - when you are ready to make a valid move (square must be give in the form <number><letter>)
+                    resign - admitting defeat ~ will end the game
+                    highlight <SQUARE> - will highlight valid moves for the square that you have been given (square must be give in the form <number><letter>)
+                    help - with possible commands
+                    """;
+
     }
     public String eval(String input) {
         pre = false;
         post = false;
         game = false;
         try {
+            ws = new WebSocketFacade(serverUrl, notificationHandler);
             var tokens = input.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
@@ -109,27 +114,76 @@ public class GameClient implements ClientObject {
     }
 
     public String leave(String... params) throws ResponseException {
-        if (params.length == 1) {
-            CreateGameResult gameResult = server.createGame(new CreateGameRequest(this.authToken, params[0]));
-            return String.format("You created the game %s.", params[0]);
+        if (params.length == 0) {
+            ws.leave(authToken, gameData.gameID());
+            this.post = true;
+            return String.format("Goodbye, Thanks for playing! %s.", params[0]);
         }
-        throw new ResponseException(400, "Expected: <NAME>");
+        throw new ResponseException(400, "Expected: no user input");
     }
 
     public String move(String... params) throws ResponseException {
-        if (params.length == 1) {
-            CreateGameResult gameResult = server.createGame(new CreateGameRequest(this.authToken, params[0]));
-            return String.format("You created the game %s.", params[0]);
+        if (params.length == 2) {
+            char colLetter = params[0].charAt(0);
+            int row = Integer.parseInt(params[0].substring(1));;
+            int col = colLetter - 'a' + 1;
+            ChessPosition start = new ChessPosition(row, col);
+
+            char colLetterEnd = params[1].charAt(0);
+            int rowEnd = Integer.parseInt(params[1].substring(1));;
+            int colEnd = colLetterEnd - 'a' + 1;
+            ChessPosition end = new ChessPosition(rowEnd, colEnd);
+
+            ChessPiece myPiece = gameData.game().getBoard().getPiece(start);
+            Collection<ChessMove> posMoves = myPiece.pieceMoves(gameData.game().getBoard(), start);
+
+            boolean valid = false;
+            for (ChessMove posMove: posMoves){
+                if (posMove.getEndPosition() == end){
+                    valid = true;
+                }
+            }
+            if (!valid){
+                throw new ResponseException(500, "Invalid move");
+            }
+            ChessPiece.PieceType promotion = null;
+            if (myPiece.getPieceType() == ChessPiece.PieceType.PAWN && (row == 1 || row == 8)){
+                promotion = getPromotionPieceType();
+            }
+            ChessMove chessMove = new ChessMove(start, end, promotion);
+            ws.makeMove(authToken, gameData.gameID(), chessMove);
+            return String.format("Move Successful. Now wait for opponent to make their move");
         }
-        throw new ResponseException(400, "Expected: <NAME>");
+        throw new ResponseException(400, "Expected: <START SQUARE> <END SQUARE>");
+    }
+
+    private ChessPiece.PieceType getPromotionPieceType() {
+        notificationHandler.printPrompt();
+        System.out.println("congratulations, your pawn is being promoted!");
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("please type (queen|rook|bishop|knight) to indicate desired promotion :)");
+            String line = scanner.nextLine();
+            if (line.equals("queen")) {
+                return ChessPiece.PieceType.QUEEN;
+            } else if (line.equals("rook")) {
+                return ChessPiece.PieceType.ROOK;
+            } else if (line.equals("bishop")) {
+                return ChessPiece.PieceType.BISHOP;
+            } else if (line.equals("knight")) {
+                return ChessPiece.PieceType.KNIGHT;
+            } else {
+                System.out.println("Invalid piece type, try again");
+            }
+        }
     }
 
     public String resign(String... params) throws ResponseException {
-        if (params.length == 1) {
-            CreateGameResult gameResult = server.createGame(new CreateGameRequest(this.authToken, params[0]));
-            return String.format("You created the game %s.", params[0]);
+        if (params.length == 0) {
+            ws.resign(authToken, gameData.gameID());
+            return String.format("Thanks for playing, you will get them next time!");
         }
-        throw new ResponseException(400, "Expected: <NAME>");
+        throw new ResponseException(400, "Expected no parameters");
     }
 
     public String highlight(String... params) throws ResponseException {
@@ -139,7 +193,8 @@ public class GameClient implements ClientObject {
                 int row = Integer.parseInt(params[0]);
                 int col = colLetter - 'a' + 1;
                 ChessPosition start = new ChessPosition(row, col);
-                Collection<ChessMove> posMoves = ChessPiece.pieceMoves(gameData.game().getBoard(), start);
+                ChessPiece myPiece = gameData.game().getBoard().getPiece(start);
+                Collection<ChessMove> posMoves = myPiece.pieceMoves(gameData.game().getBoard(), start);
                 ui.ChessBoard draw = new ui.ChessBoard();
                 if (color == ChessGame.TeamColor.WHITE) {
                     draw.drawWhite(gameData.game().getBoard(), posMoves);

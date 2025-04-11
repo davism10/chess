@@ -63,6 +63,7 @@ public class EscapeSequences {
     public static final String SET_TEXT_COLOR_LIGHT_PINK = SET_TEXT_COLOR + "217m"; // Light Pink
     public static final String SET_TEXT_COLOR_DEEP_PINK = SET_TEXT_COLOR + "198m";  // Deep Pink
     public static final String SET_TEXT_COLOR_SALMON = SET_TEXT_COLOR + "209m";
+    public static final String SET_TEXT_COLOR_SOFT_RED = SET_TEXT_COLOR + "210m";
 
     public static final String WHITE_KING = " ♔ ";
     public static final String WHITE_QUEEN = " ♕ ";
