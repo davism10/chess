@@ -100,6 +100,13 @@ public class WebSocketHandler {
         return teamColor;
     }
 
+    public String otherTeam(String team){
+        if (team.equals("white")){
+            return "black";
+        }
+        return "white";
+    }
+
     private void makeMove(String authToken, int gameId, ChessMove move) throws ResponseException {
         String visitorName = userService.getUser(authToken);
         if (connections.isResign(gameId)){
@@ -117,6 +124,27 @@ public class WebSocketHandler {
             GameData newGameData = new GameData(gameId, gameService.getGame(gameId).whiteUsername(),
                     gameService.getGame(gameId).blackUsername(), gameService.getGame(gameId).gameName(), oldGame);
             gameService.updategame(gameId, newGameData);
+
+            boolean checkmate = gameService.getGame(gameId).game().isInCheckmate(ChessGame.notColor(getTeamColorType(gameId, visitorName)));
+            boolean check = gameService.getGame(gameId).game().isInCheck(ChessGame.notColor(getTeamColorType(gameId, visitorName)));
+            boolean stalemate = gameService.getGame(gameId).game().isInStalemate(ChessGame.notColor(getTeamColorType(gameId, visitorName)));
+
+            if (checkmate) {
+                var mateMessage = String.format("%s is in checkmate by %s", otherTeam(getTeamColor(gameId, visitorName)));
+                var mateNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, mateMessage);
+                connections.broadcastAll(mateNotification, gameId);
+            }
+            else if (check) {
+                var checkMessage = String.format("%s is in check", otherTeam(getTeamColor(gameId, visitorName)));
+                var checkNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkMessage);
+                connections.broadcastAll(checkNotification, gameId);
+            }
+            if (stalemate) {
+                var staleMessage = String.format("%s is in stalemate", otherTeam(getTeamColor(gameId, visitorName)));
+                var staleNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, staleMessage);
+                connections.broadcastAll(staleNotification, gameId);
+            }
+
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             var gameNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameService.getGame(gameId));
             connections.broadcastAll(gameNotification, gameId);
