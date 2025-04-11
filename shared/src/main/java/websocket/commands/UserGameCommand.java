@@ -1,5 +1,8 @@
 package websocket.commands;
 
+import chess.ChessMove;
+import model.GameData;
+
 import java.util.Objects;
 
 /**
@@ -39,6 +42,10 @@ public class UserGameCommand {
 
     public Integer getGameID() {
         return gameID;
+    }
+
+    public ChessMove getMove(){
+        return null;
     }
 
     @Override

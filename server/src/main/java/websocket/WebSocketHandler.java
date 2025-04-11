@@ -10,6 +10,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.UserService;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -37,7 +38,10 @@ public class WebSocketHandler {
             UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
             switch (action.getCommandType()) {
                 case CONNECT -> connect(action.getAuthToken(), action.getGameID(), session);
-                case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameID(), action.getMove());
+                case MAKE_MOVE -> {
+                    MakeMoveCommand newAction = new Gson().fromJson(message, MakeMoveCommand.class);
+                    makeMove(newAction.getAuthToken(), newAction.getGameID(), newAction.getMove());
+                }
                 case LEAVE -> leave(action.getAuthToken());
                 case RESIGN -> resign(action.getAuthToken(), action.getGameID());
             }
@@ -54,16 +58,7 @@ public class WebSocketHandler {
         try {
             String visitorName = userService.getUser(authToken);
             connections.add(visitorName, session);
-            String teamColor;
-            if (gameService.getGame(gameId).whiteUsername() == visitorName){
-                teamColor = "white";
-            }
-            else if (gameService.getGame(gameId).blackUsername() == visitorName){
-                teamColor = "black";
-            }
-            else {
-                teamColor = "an observer";
-            }
+            String teamColor = getTeamColor(gameId, visitorName);
 
             var message = String.format("%s joined the game as %s", visitorName, teamColor);
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
@@ -77,19 +72,52 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove(String authToken, int gameId, ChessMove move) throws ResponseException {
+    private String getTeamColor(Integer gameId, String visitorName) throws ResponseException {
+        String teamColor;
+        if (gameService.getGame(gameId).whiteUsername().equals(visitorName)){
+            teamColor = "white";
+        }
+        else if (gameService.getGame(gameId).blackUsername().equals(visitorName)){
+            teamColor = "black";
+        }
+        else {
+            teamColor = "an observer";
+        }
+        return teamColor;
+    }
 
+    private ChessGame.TeamColor getTeamColorType(Integer gameId, String visitorName) throws ResponseException {
+        ChessGame.TeamColor teamColor;
+        if (gameService.getGame(gameId).whiteUsername().equals(visitorName)){
+            teamColor = ChessGame.TeamColor.WHITE;
+        }
+        else if (gameService.getGame(gameId).blackUsername().equals(visitorName)){
+            teamColor = ChessGame.TeamColor.BLACK;
+        }
+        else {
+            teamColor = null;
+        }
+        return teamColor;
+    }
+
+    private void makeMove(String authToken, int gameId, ChessMove move) throws ResponseException {
+        String visitorName = userService.getUser(authToken);
+        if (getTeamColorType(gameId, visitorName) != gameService.getGame(gameId).game().getTeamTurn()){
+            throw new ResponseException(500, "Not your turn!");
+        }
         try {
-            String visitorName = userService.getUser(authToken);
             ChessPiece piece = gameService.getGame(gameId).game().getBoard().getPiece(move.getStartPosition());
             var message = String.format("%s moved %s from %s to %s", visitorName, piece.getPieceType(),
                     move.getStartPosition().toString(), move.getEndPosition().toString());
-            gameService.getGame(gameId).game().makeMove(move);
-            gameService.updategame(gameId, gameService.getGame(gameId));
+            ChessGame oldGame = gameService.getGame(gameId).game();
+            oldGame.makeMove(move);
+            GameData newGameData = new GameData(gameId, gameService.getGame(gameId).whiteUsername(),
+                    gameService.getGame(gameId).blackUsername(), gameService.getGame(gameId).gameName(), oldGame);
+            gameService.updategame(gameId, newGameData);
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             var gameNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameService.getGame(gameId));
+            connections.broadcastAll(gameNotification);
             connections.broadcast(visitorName, notification);
-            connections.broadcast(visitorName, gameNotification);
 
         } catch (Exception e) {
             throw new ResponseException(500,e.getMessage());
@@ -118,14 +146,14 @@ public class WebSocketHandler {
             String otherUser;
 
             String teamColor;
-            if (gameService.getGame(gameId).whiteUsername() == visitorName) {
+            if (gameService.getGame(gameId).whiteUsername().equals(visitorName)) {
                 teamColor = "white";
                 newGameInfo = oldGame.game();
                 newGameInfo.setTeamTurn(null);
                 otherUser = oldGame.blackUsername();
                 newGame = new GameData(gameId, null, oldGame.blackUsername(), oldGame.gameName(), newGameInfo);
 
-            } else if (gameService.getGame(gameId).blackUsername() == visitorName) {
+            } else if (gameService.getGame(gameId).blackUsername().equals(visitorName)) {
                 teamColor = "black";
                 newGameInfo = oldGame.game();
                 newGameInfo.setTeamTurn(null);
@@ -138,7 +166,7 @@ public class WebSocketHandler {
 
             var message = String.format("%s(%s) resigned. %s has won the game.", visitorName, teamColor, otherUser);
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-            connections.broadcast(visitorName, notification);
+            connections.broadcastAll(notification);
         } catch (IOException e) {
             throw new ResponseException(500, e.getMessage());
         }

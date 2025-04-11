@@ -6,6 +6,7 @@ import service.ClearService;
 import service.GameService;
 import service.UserService;
 import spark.*;
+import websocket.WebSocketHandler;
 
 public class Server {
 
@@ -28,8 +29,10 @@ public class Server {
             UserServerHandler userServerHandler = new UserServerHandler(userService);
             GameServerHandler gameServerHandler = new GameServerHandler(gameService);
             ExceptionServerHandler exceptionServerHandler = new ExceptionServerHandler();
+            WebSocketHandler webSocketHandler = new WebSocketHandler(gameService, userService);
 
             // Register your endpoints and handle exceptions here.
+            Spark.webSocket("/ws", webSocketHandler);
             Spark.delete("/db", clearServerHandler::clearHandler);
             Spark.post("/user", userServerHandler::registerHandler);
             Spark.post("/session", userServerHandler::loginHandler);

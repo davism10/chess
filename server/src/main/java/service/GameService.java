@@ -1,5 +1,7 @@
 package service;
 
+import chess.ChessBoard;
+import chess.ChessMove;
 import model.*;
 import chess.ChessGame;
 import dataaccess.AuthDAO;
@@ -24,6 +26,15 @@ public class GameService {
         }
         catch (Exception e){
             throw new ResponseException(400, "Error: bad request, invalid gameID");
+        }
+    }
+
+    public void updategame(int gameID, GameData gameData) throws ResponseException{
+        try {
+            gameMemory.updateGame(gameID, gameData);
+        }
+        catch (Exception e){
+            throw new ResponseException(500, "Error: invalid update");
         }
     }
 

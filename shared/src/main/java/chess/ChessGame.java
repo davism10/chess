@@ -22,7 +22,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        return whoTurn;
+        return this.whoTurn;
     }
 
     /**
@@ -31,7 +31,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        whoTurn = team;
+        this.whoTurn = team;
     }
 
     @Override
@@ -70,7 +70,7 @@ public class ChessGame {
      * @param color the color you have
      * @return the other color
      */
-    public TeamColor notColor(TeamColor color) {
+    public static TeamColor notColor(TeamColor color) {
         if (color == TeamColor.WHITE) {
             return TeamColor.BLACK;
         }
