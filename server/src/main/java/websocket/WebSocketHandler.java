@@ -40,10 +40,10 @@ public class WebSocketHandler {
                 case CONNECT -> connect(action.getAuthToken(), action.getGameID(), session);
                 case MAKE_MOVE -> {
                     MakeMoveCommand newAction = new Gson().fromJson(message, MakeMoveCommand.class);
-                    makeMove(newAction.getAuthToken(), newAction.getGameID(), newAction.getMove(), session);
+                    makeMove(newAction.getAuthToken(), newAction.getGameID(), newAction.getMove());
                 }
-                case LEAVE -> leave(action.getAuthToken(), action.getGameID(), session);
-                case RESIGN -> resign(action.getAuthToken(), action.getGameID(), session);
+                case LEAVE -> leave(action.getAuthToken(), action.getGameID());
+                case RESIGN -> resign(action.getAuthToken(), action.getGameID());
             }
         }
         catch (Exception e) {
@@ -63,7 +63,7 @@ public class WebSocketHandler {
             var message = String.format("%s joined the game as %s", visitorName, teamColor);
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             var gameNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameService.getGame(gameId));
-            connections.broadcast(visitorName, notification, session);
+            connections.broadcast(visitorName, notification, gameId);
             session.getRemote().sendString(new Gson().toJson(gameNotification));
 
         }
@@ -100,7 +100,7 @@ public class WebSocketHandler {
         return teamColor;
     }
 
-    private void makeMove(String authToken, int gameId, ChessMove move, Session session) throws ResponseException {
+    private void makeMove(String authToken, int gameId, ChessMove move) throws ResponseException {
         String visitorName = userService.getUser(authToken);
         if (connections.isResign(gameId)){
             throw new ResponseException(500, "game is over");
@@ -119,21 +119,21 @@ public class WebSocketHandler {
             gameService.updategame(gameId, newGameData);
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             var gameNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameService.getGame(gameId));
-            connections.broadcastAll(gameNotification, session);
-            connections.broadcast(visitorName, notification, session);
+            connections.broadcastAll(gameNotification, gameId);
+            connections.broadcast(visitorName, notification, gameId);
 
         } catch (Exception e) {
             throw new ResponseException(500,e.getMessage());
         }
     }
 
-    private void leave(String authToken, int gameId, Session session) throws ResponseException {
+    private void leave(String authToken, int gameId) throws ResponseException {
         try {
             String visitorName = userService.getUser(authToken);
             connections.remove(visitorName);
             var message = String.format("%s left the game", visitorName);
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-            connections.broadcast(visitorName, notification, session);
+            connections.broadcast(visitorName, notification, gameId);
             GameData newGame;
             GameData oldGame = gameService.getGame(gameId);
             if (getTeamColor(gameId, visitorName).equals("white")){
@@ -150,7 +150,7 @@ public class WebSocketHandler {
         }
     }
 
-    private void resign(String authToken, int gameId, Session session) throws ResponseException {
+    private void resign(String authToken, int gameId) throws ResponseException {
         if (connections.isResign(gameId)){
             throw new ResponseException(500, "game is over");
         }
@@ -176,7 +176,7 @@ public class WebSocketHandler {
             connections.resigned(gameId);
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
 
-            connections.broadcastAll(notification, session);
+            connections.broadcastAll(notification, gameId);
         } catch (IOException e) {
             throw new ResponseException(500, e.getMessage());
         }

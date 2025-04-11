@@ -31,11 +31,11 @@ public class ConnectionManager {
         connections.remove(visitorName);
     }
 
-    public void broadcastAll(ServerMessage notification, Session session) throws IOException {
+    public void broadcastAll(ServerMessage notification, int gameId) throws IOException {
         var removeList = new ArrayList<websocket.Connection>();
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
-                if (c.session == session) {
+                if (c.gameId == gameId) {
                     c.send(notification);
                 }
             } else {
@@ -49,12 +49,12 @@ public class ConnectionManager {
         }
     }
 
-    public void broadcast(String excludeVisitorName, ServerMessage notification, Session session) throws IOException {
+    public void broadcast(String excludeVisitorName, ServerMessage notification, int gameId) throws IOException {
         var removeList = new ArrayList<websocket.Connection>();
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
                 if (!c.visitorName.equals(excludeVisitorName)) {
-                    if (c.session == session) {
+                    if (c.gameId == gameId) {
                         c.send(notification);
                     }
                 }
