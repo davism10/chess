@@ -194,10 +194,27 @@ public class GameClient implements ClientObject {
         }
     }
 
+    public boolean resignGood(){
+        Scanner scanner = new Scanner(System.in);
+        notificationHandler.printPrompt();
+        while (true){
+            System.out.println("Do you want to resign? Type yes or no");
+            String line = scanner.nextLine();
+            if (line.equals("yes")){
+                return true;
+            }
+            else if(line.equals("no")){
+                return false;
+            }
+        }
+    }
+
     public String resign(String... params) throws ResponseException {
         if (params.length == 0) {
-            ws.resign(authToken, gameData.gameID());
-            return String.format("Thanks for playing, you will get them next time!");
+            if (resignGood()) {
+                ws.resign(authToken, gameData.gameID());
+                return String.format("Thanks for playing, you will get them next time!");
+            }
         }
         throw new ResponseException(400, "Expected no parameters");
     }
