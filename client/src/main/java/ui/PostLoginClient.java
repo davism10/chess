@@ -149,7 +149,7 @@ public class PostLoginClient implements ClientObject {
 
                 return String.format("You joined the game %s.", params[0]);
             } catch (Exception e) {
-                throw new ResponseException(400, "Game ID does not exist");
+                throw new ResponseException(400, "Cannot join game");
             }
         }
         throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK]");

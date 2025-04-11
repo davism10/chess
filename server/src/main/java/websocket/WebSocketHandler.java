@@ -47,7 +47,7 @@ public class WebSocketHandler {
             }
         }
         catch (Exception e) {
-            var errorMessage = String.format("Error: message is not valid because %s", e);
+            var errorMessage = String.format("Error: not valid because -> %s", e.getMessage());
             var notification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, errorMessage);
             session.getRemote().sendString(new Gson().toJson(notification));
         }
@@ -70,6 +70,13 @@ public class WebSocketHandler {
         catch (Exception e){
             throw new ResponseException(500, e.getMessage());
         }
+    }
+
+    public String otherTeam(String team){
+        if (team.equals("white")){
+            return "black";
+        }
+        return "white";
     }
 
     private String getTeamColor(Integer gameId, String visitorName) throws ResponseException {
@@ -119,6 +126,27 @@ public class WebSocketHandler {
             gameService.updategame(gameId, newGameData);
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             var gameNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameService.getGame(gameId));
+
+            boolean checkmate = gameService.getGame(gameId).game().isInCheckmate(ChessGame.notColor(getTeamColorType(gameId, visitorName)));
+            boolean check = gameService.getGame(gameId).game().isInCheck(ChessGame.notColor(getTeamColorType(gameId, visitorName)));
+            boolean stalemate = gameService.getGame(gameId).game().isInStalemate(ChessGame.notColor(getTeamColorType(gameId, visitorName)));
+
+            if (checkmate) {
+                var mateMessage = String.format("%s is in checkmate by %s", otherTeam(getTeamColor(gameId, visitorName)));
+                var mateNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, mateMessage);
+                connections.broadcastAll(mateNotification, gameId);
+            }
+            else if (check) {
+                var checkMessage = String.format("%s is in check", otherTeam(getTeamColor(gameId, visitorName)));
+                var checkNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, checkMessage);
+                connections.broadcastAll(checkNotification, gameId);
+            }
+            if (stalemate) {
+                var staleMessage = String.format("%s is in stalemate", otherTeam(getTeamColor(gameId, visitorName)));
+                var staleNotification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, staleMessage);
+                connections.broadcastAll(staleNotification, gameId);
+            }
+
             connections.broadcastAll(gameNotification, gameId);
             connections.broadcast(visitorName, notification, gameId);
 
@@ -169,7 +197,7 @@ public class WebSocketHandler {
                 otherUser = oldGame.whiteUsername();
             } else {
                 teamColor = "an observer";
-                throw new ResponseException(500, "Error: an observer cannot resign");
+                throw new ResponseException(500, "an observer cannot resign");
             }
 
             var message = String.format("%s(%s) resigned. %s has won the game.", visitorName, teamColor, otherUser);

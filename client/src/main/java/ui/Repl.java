@@ -91,7 +91,6 @@ public class Repl implements NotificationHandler {
     }
 
     public void notifyLoadGame(LoadGameMessage notification) {
-        System.out.println("ready to load game");
         ui.ChessBoard draw = new ui.ChessBoard();
         if (client.getColor() == ChessGame.TeamColor.BLACK){
             draw.drawBlack(notification.getGame().game().getBoard(), null);
