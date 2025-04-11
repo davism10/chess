@@ -61,6 +61,7 @@ public class ChessBoard {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         out.print(ERASE_SCREEN);
+        out.println();
 
         drawHeaders(out, HEADERS);
         resetColor(out);
@@ -69,12 +70,14 @@ public class ChessBoard {
 
         drawHeaders(out, HEADERS);
         resetColor(out);
+        out.println();
     }
 
     public static void drawBlack(chess.ChessBoard board, Collection<ChessMove> moves) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         out.print(ERASE_SCREEN);
+        out.println();
 
         drawHeaders(out, HEADERS_REVERSED);
         resetColor(out);
@@ -83,6 +86,7 @@ public class ChessBoard {
 
         drawHeaders(out, HEADERS_REVERSED);
         resetColor(out);
+        out.println();
     }
 
     private static void resetColor(PrintStream out) {
@@ -126,8 +130,11 @@ public class ChessBoard {
     }
 
     private static boolean inMoves(ChessPosition myPosition, Collection<ChessMove> moves){
+        if (moves == null){
+            return false;
+        }
         for (ChessMove move: moves){
-            if (myPosition == move.getEndPosition()){
+            if (myPosition.equals(move.getEndPosition())){
                 return true;
             }
         }

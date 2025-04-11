@@ -108,7 +108,7 @@ public class GameClient implements ClientObject {
             } else {
                 draw.drawBlack(gameData.game().getBoard(), null);
             }
-            return null;
+            return " ";
         }
         throw new ResponseException(400, "Expected no user input");
     }
@@ -187,26 +187,28 @@ public class GameClient implements ClientObject {
     }
 
     public String highlight(String... params) throws ResponseException {
-        if (params.length == 0) {
+        if (params.length == 1) {
             try {
                 char colLetter = params[0].charAt(0);
-                int row = Integer.parseInt(params[0]);
+                int row = Integer.parseInt(params[0].substring(1));
                 int col = colLetter - 'a' + 1;
+                System.out.println("made it");
                 ChessPosition start = new ChessPosition(row, col);
                 ChessPiece myPiece = gameData.game().getBoard().getPiece(start);
                 Collection<ChessMove> posMoves = myPiece.pieceMoves(gameData.game().getBoard(), start);
+                System.out.println(posMoves);
                 ui.ChessBoard draw = new ui.ChessBoard();
                 if (color == ChessGame.TeamColor.WHITE) {
                     draw.drawWhite(gameData.game().getBoard(), posMoves);
                 } else {
                     draw.drawBlack(gameData.game().getBoard(), posMoves);
                 }
-                return null;
+                return " ";
             } catch (Exception e) {
                 throw new ResponseException(400, "Incorrect square notation, try again");
             }
         }
-        throw new ResponseException(400, "Expected no parameters");
+        throw new ResponseException(400, "Expected <Square>");
     }
 
     public boolean getPost(){

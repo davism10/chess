@@ -91,6 +91,7 @@ public class Repl implements NotificationHandler {
     }
 
     public void notifyLoadGame(LoadGameMessage notification) {
+        System.out.println("ready to load game");
         ui.ChessBoard draw = new ui.ChessBoard();
         if (client.getColor() == ChessGame.TeamColor.BLACK){
             draw.drawBlack(notification.getGame().game().getBoard(), null);
@@ -104,7 +105,7 @@ public class Repl implements NotificationHandler {
     }
 
 
-    private void printPrompt() {
+    public void printPrompt() {
 //        System.out.print("\n" + RESET + ">>> " + "\u001B[38;2;34;139;34m");
         System.out.print("\n" +  ">>> " + "\u001B[38;2;34;139;34m");
     }
