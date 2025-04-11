@@ -128,12 +128,13 @@ public class WebSocketHandler {
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             var gameNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameService.getGame(gameId));
 
-            connections.broadcastAll(gameNotification, gameId);
-            connections.broadcast(visitorName, notification, gameId);
 
             boolean checkmate = gameService.getGame(gameId).game().isInCheckmate(ChessGame.notColor(getTeamColorType(gameId, visitorName)));
             boolean check = gameService.getGame(gameId).game().isInCheck(ChessGame.notColor(getTeamColorType(gameId, visitorName)));
             boolean stalemate = gameService.getGame(gameId).game().isInStalemate(ChessGame.notColor(getTeamColorType(gameId, visitorName)));
+
+            connections.broadcastAll(gameNotification, gameId);
+            connections.broadcast(visitorName, notification, gameId);
 
             if (checkmate) {
                 var mateMessage = String.format("%s is in checkmate by %s", otherTeam(getTeamColor(gameId, visitorName)), visitorName);
