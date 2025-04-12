@@ -170,8 +170,14 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         Collection<ChessPosition> possiblePosition = gameBoard.getAllPieces(teamColor);
+        Collection<ChessMove> validPieceMoves;
         for (ChessPosition position : possiblePosition) {
-            Collection<ChessMove> validPieceMoves = gameBoard.getPiece(position).pieceMoves(gameBoard, position);
+            if (teamColor.equals(TeamColor.WHITE)) {
+                validPieceMoves = gameBoard.getPiece(position).pieceMoves(getBlackBoard(), position);
+            }
+            else {
+                validPieceMoves = gameBoard.getPiece(position).pieceMoves(getBoard(), position);
+            }
             if (isKing(validPieceMoves)) {
                 return true;
             }
@@ -233,6 +239,16 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
+        return gameBoard;
+    }
+
+    public ChessBoard getBlackBoard() {
+//        ChessBoard updated = new ChessBoard();
+//        for (int row = 8; row > -1 ; --row){
+//            for (int col = 8; col > -1 ; --col){
+//                updated.addPiece(new ChessPosition(row, col), gameBoard.getPiece(new ChessPosition(9 - row, 9 - col)));
+//            }
+//        }
         return gameBoard;
     }
 }

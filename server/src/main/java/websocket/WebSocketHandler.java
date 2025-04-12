@@ -118,8 +118,16 @@ public class WebSocketHandler {
         }
         try {
             ChessPiece piece = gameService.getGame(gameId).game().getBoard().getPiece(move.getStartPosition());
-            var message = String.format("%s moved %s from %s to %s", visitorName, piece.getPieceType(),
-                    move.getStartPosition().toString(), move.getEndPosition().toString());
+            String pieceString;
+            if (getTeamColor(gameId, visitorName) == "white"){
+                char file = (char) ('a' + move.getEndPosition().getColumn() - 1); // 'a' to 'h'
+                pieceString = "" + file + move.getEndPosition().getColumn();
+            }
+            else {
+                char file = (char) (char) ('h' - (move.getEndPosition().getColumn() - 1)); // 'a' to 'h'
+                pieceString = "" + file + move.getEndPosition().getColumn();
+            }
+            var message = String.format("%s moved %s to %s", visitorName, piece.getPieceType(), pieceString);
             ChessGame oldGame = gameService.getGame(gameId).game();
             oldGame.makeMove(move);
             GameData newGameData = new GameData(gameId, gameService.getGame(gameId).whiteUsername(),

@@ -5,6 +5,8 @@ import model.*;
 import net.ServerFacade;
 import websocket.NotificationHandler;
 import websocket.WebSocketFacade;
+
+import java.nio.ReadOnlyBufferException;
 import java.util.*;
 
 public class GameClient implements ClientObject {
@@ -126,51 +128,46 @@ public class GameClient implements ClientObject {
     }
 
     public String move(String... params) throws ResponseException {
-        if (params.length == 2) {
-            char colLetter = params[0].charAt(0);
-            int row = Integer.parseInt(params[0].substring(1));
-            int col;
-            if (color == ChessGame.TeamColor.WHITE) {
+        try {
+            if (params.length == 2) {
+                char colLetter = params[0].charAt(0);
+                int row = Integer.parseInt(params[0].substring(1));
+                int col;
                 col = colLetter - 'a' + 1;
-            }
-            else {
-                col = 9 - (colLetter - 'a' + 1);
-            }
-            ChessPosition start = new ChessPosition(row, col);
+                ChessPosition start = new ChessPosition(row, col);
 
-            char colLetterEnd = params[1].charAt(0);
-            int rowEnd = Integer.parseInt(params[1].substring(1));
-            int colEnd;
-            if (color == ChessGame.TeamColor.WHITE) {
+                char colLetterEnd = params[1].charAt(0);
+                int rowEnd = Integer.parseInt(params[1].substring(1));
+                int colEnd;
                 colEnd = colLetterEnd - 'a' + 1;
-            }
-            else {
-                colEnd = 9 - (colLetterEnd - 'a' + 1);
-            }
-            ChessPosition end = new ChessPosition(rowEnd, colEnd);
+                ChessPosition end = new ChessPosition(rowEnd, colEnd);
 
-            ChessPiece myPiece = gameData.game().getBoard().getPiece(start);
-            Collection<ChessMove> posMoves = myPiece.pieceMoves(gameData.game().getBoard(), start);
+                ChessPiece myPiece = gameData.game().getBoard().getPiece(start);
+                Collection<ChessMove> posMoves = myPiece.pieceMoves(gameData.game().getBoard(), start);
 
-            boolean valid = false;
-            for (ChessMove posMove: posMoves){
-                if (posMove.getEndPosition().equals(end)){
-                    valid = true;
+                boolean valid = false;
+                for (ChessMove posMove : posMoves) {
+                    if (posMove.getEndPosition().equals(end)) {
+                        valid = true;
+                    }
                 }
+                if (!valid) {
+                    throw new ResponseException(500, "Invalid move");
+                }
+                ChessPiece.PieceType promotion = null;
+                if (myPiece.getPieceType() == ChessPiece.PieceType.PAWN && (row == 1
+                        || row == 8)) {
+                    promotion = getPromotionPieceType();
+                }
+                ChessMove chessMove = new ChessMove(start, end, promotion);
+                ws.makeMove(authToken, gameData.gameID(), chessMove);
+                return String.format("Move pending");
             }
-            if (!valid){
-                throw new ResponseException(500, "Invalid move");
-            }
-            ChessPiece.PieceType promotion = null;
-            if (myPiece.getPieceType() == ChessPiece.PieceType.PAWN && (row == 1
-                    || row == 8)){
-                promotion = getPromotionPieceType();
-            }
-            ChessMove chessMove = new ChessMove(start, end, promotion);
-            ws.makeMove(authToken, gameData.gameID(), chessMove);
-            return String.format("Move pending");
+            throw new ResponseException(400, "Expected: <START SQUARE> <END SQUARE>");
         }
-        throw new ResponseException(400, "Expected: <START SQUARE> <END SQUARE>");
+        catch (Exception e){
+            throw new ResponseException(500, e.getMessage());
+        }
     }
 
     private ChessPiece.PieceType getPromotionPieceType() {
@@ -225,15 +222,13 @@ public class GameClient implements ClientObject {
                 char colLetter = params[0].charAt(0);
                 int row = Integer.parseInt(params[0].substring(1));
                 int col;
-                if (color == ChessGame.TeamColor.WHITE) {
-                    col = colLetter - 'a' + 1;
-                }
-                else {
-                    col = 9 - (colLetter - 'a' + 1);
-                }
+                col = colLetter - 'a' + 1;
                 ChessPosition start = new ChessPosition(row, col);
                 ChessPiece myPiece = gameData.game().getBoard().getPiece(start);
-                Collection<ChessMove> posMoves = myPiece.pieceMoves(gameData.game().getBoard(), start);
+                Collection<ChessMove> posMoves;
+                ChessGame chessGame = new ChessGame();
+                chessGame.setBoard(gameData.game().getBoard());
+                posMoves = chessGame.validMoves(start);
                 ui.ChessBoard draw = new ui.ChessBoard();
                 if (color == ChessGame.TeamColor.WHITE) {
                     draw.drawWhite(gameData.game().getBoard(), posMoves);
